@@ -1,0 +1,14 @@
+version: '3'
+
+#services: 
+#    build: ./services
+#    ports: 
+#        - 3001
+#        - 3002
+
+website:
+    build: ./ebms-frontend
+    ports: 
+        - 3000:80
+    depends_on: 
+        #-services
