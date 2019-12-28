@@ -1,0 +1,4 @@
+FROM node:10
+CMD node server.js
+ENV PORT=5000 
+EXPOSE 5000
