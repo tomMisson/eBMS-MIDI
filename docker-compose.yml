@@ -1,14 +1,21 @@
-version: '3'
+version: "3.3"
 
-#services: 
-#    build: ./services
-#    ports: 
-#        - 3001
-#        - 3002
+services: 
+    database:
+        build: ./db
+        ports:
+            - 27017
 
-website:
-    build: ./ebms-frontend
-    ports: 
-        - 3000:80
-    depends_on: 
-        #-services
+
+    api: 
+        build: ./api
+        ports: 
+            - 5000
+
+    website:
+        build: ./ebms-frontend
+        ports: 
+            - 3000:80
+        depends_on: 
+            - api
+            - database
