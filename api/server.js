@@ -9,6 +9,7 @@ app.use(bodyParser.json())
 
 const port = process.env.PORT
 
+
 var auth = express()
 var api = express()
 var net = express()
@@ -27,6 +28,7 @@ auth.post('/', (req, res) => {
     if(data.username === process.env.USRNAME && data.password === process.env.PSWD)
     {
         let token = hash.sha256().update(req.headers['x-forwarded-for'] || req.connection.remoteAddress).digest('hex')
+        
         res.json({"token":token})
     }
     else

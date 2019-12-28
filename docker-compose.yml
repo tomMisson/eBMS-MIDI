@@ -4,18 +4,19 @@ services:
     database:
         build: ./db
         ports:
-            - 27017
+            - 27017:27017
 
 
     api: 
         build: ./api
         ports: 
             - 5000
+        depends_on:
+            - database 
 
-    website:
-        build: ./ebms-frontend
-        ports: 
-            - 3000:80
-        depends_on: 
-            - api
-            - database
+    #website:
+    #    build: ./ebms-frontend
+    #    ports: 
+    #        - 3000:80
+    #    depends_on: 
+    #        - api

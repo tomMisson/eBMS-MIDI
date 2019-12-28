@@ -1,6 +1,8 @@
 {
   "name": "ebms-frontend",
+  "description": "User interface for the Tyrells Products LTD MIDI gateway",
   "version": "0.1.0",
+  "licence": "MIT",
   "private": true,
   "dependencies": {
     "react": "^16.11.0",

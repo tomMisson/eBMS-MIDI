@@ -1,4 +1,3 @@
 FROM node:10
-COPY . /home/node/app
-CMD npm install | node run build
+CMD ["npm",  "install"]
 EXPOSE 3000
