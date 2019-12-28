@@ -1,4 +1,6 @@
 FROM node:10
 CMD node server.js
 ENV PORT=5000 
+ENV USRNAME="admin"
+ENV PSWD = "888888"
 EXPOSE 5000
