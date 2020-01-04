@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <!--<link rel="icon" href="%PUBLIC_URL%/favicon.ico" />-->
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
     <meta
@@ -14,7 +14,7 @@
       manifest.json provides metadata used when your web app is installed on a
       user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
     -->
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <!--<link rel="manifest" href="%PUBLIC_URL%/manifest.json" />-->
     <!--
       Notice the use of %PUBLIC_URL% in the tags above.
       It will be replaced with the URL of the `public` folder during the build.
@@ -42,23 +42,25 @@
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
     <header>
-      <div class="bar"></div>
+      <div class="bar">
+        <img id="logo" src="images/tyrrell-products-logo.png" alt="logo">
+      </div>
     </header>
     <aside>
       <nav>
         <ul>
-          <li><a href="#"><i class="fas fa-home"></i></a></li>
-          <li><a href="#"><i class="fas fa-tablet-alt"></i></a></li>
-          <li><a href="#"><i class="fas fa-eye"></i></a></li>
-          <li><a href="#"><i class="fas fa-map-marker-alt"></i></a></li>
-          <li><a href="#"><i class="far fa-calendar-alt"></i></a></li>
-          <li><a href="#"><i class="fas fa-exclamation-triangle"></i></a></li>
-          <li><a href="#"><i class="fas fa-cog"></i></a></li>
+          <li><a href="#" title="Home"><i class="fas fa-home"></i></a></li>
+          <li><a href="#" title="Devices"><i class="fas fa-tablet-alt"></i></a></li>
+          <li><a href="#" title="Views"><i class="fas fa-eye"><span></span></i></a></li>
+          <li><a href="#" title="Location"><i class="fas fa-map-marker-alt"></i></a></li>
+          <li><a href="#" title="Schedule"><i class="far fa-calendar-alt"></i></a></li>
+          <li><a href="#" title="Alerts"><i class="fas fa-exclamation-triangle"></i></a></li>
+          <li><a href="#" title="Settings"><i class="fas fa-cog"></i></a></li>
         </ul>
       </nav>
     </aside>
     <main>
-
+      
     </main>
   </body>
 </html>
