@@ -10,6 +10,15 @@ body, html {
     background-color: #D1D5E9;
 }
 
+#title {
+    position: absolute;
+    right: 30%;
+    margin-top: 10px;
+    font-size: 24px;
+    color: rgb(87, 15, 97);
+    font-family: 'Varela Round', sans-serif;
+}
+
 #menu {
     width: 30px;
     cursor: pointer;
@@ -65,9 +74,37 @@ aside {
 }
 
 .fas, .far{
-    color: #620F6B;
     font-size: 18px;
     text-align: center;
+}
+
+.fa-home {
+    color: firebrick;
+}
+
+.fa-tablet-alt {
+    color: seagreen;
+}
+
+.fa-eye {
+    color: navy;
+    
+}
+
+.fa-map-marker-alt {
+    color: rgb(241, 23, 23);
+}
+
+.fa-calendar-alt {
+    color: teal;
+}
+
+.fa-exclamation-triangle {
+    color: red;
+}
+
+.fa-cog {
+    color: rgb(94, 94, 94);
 }
 
 .tooltiptext {
@@ -82,7 +119,9 @@ aside {
     display: none;
 }
 
-
+#title {
+    right: 50%;
+}
 
 aside {
     height: 100%;
@@ -127,7 +166,7 @@ ul li a:hover {
     width: 60px;
     margin-left: 10px;
     font-size: 12px;
-    background-color: #D21883;
+    background-color: grey;
     color: #fff;
     text-align: center;
     padding: 5px 0;
@@ -144,7 +183,7 @@ ul li a:hover {
     margin-top: -5px;
     border-width: 5px;
     border-style: solid;
-    border-color: transparent #D21883 transparent transparent;
+    border-color: transparent grey transparent transparent;
   }
   
   /* Show the tooltip text when you mouse over the tooltip container */

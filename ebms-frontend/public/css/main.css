@@ -9,6 +9,15 @@ body, html {
   background-color: #D1D5E9;
 }
 
+#title {
+  position: absolute;
+  right: 30%;
+  margin-top: 10px;
+  font-size: 24px;
+  color: #570f61;
+  font-family: 'Varela Round', sans-serif;
+}
+
 #menu {
   width: 30px;
   cursor: pointer;
@@ -65,9 +74,36 @@ aside {
 }
 
 .fas, .far {
-  color: #620F6B;
   font-size: 18px;
   text-align: center;
+}
+
+.fa-home {
+  color: firebrick;
+}
+
+.fa-tablet-alt {
+  color: seagreen;
+}
+
+.fa-eye {
+  color: navy;
+}
+
+.fa-map-marker-alt {
+  color: #f11717;
+}
+
+.fa-calendar-alt {
+  color: teal;
+}
+
+.fa-exclamation-triangle {
+  color: red;
+}
+
+.fa-cog {
+  color: #5e5e5e;
 }
 
 .tooltiptext {
@@ -79,6 +115,9 @@ aside {
 @media only screen and (min-width: 768px) {
   #menu {
     display: none;
+  }
+  #title {
+    right: 50%;
   }
   aside {
     height: 100%;
@@ -118,7 +157,7 @@ aside {
     width: 60px;
     margin-left: 10px;
     font-size: 12px;
-    background-color: #D21883;
+    background-color: grey;
     color: #fff;
     text-align: center;
     padding: 5px 0;
@@ -135,7 +174,7 @@ aside {
     margin-top: -5px;
     border-width: 5px;
     border-style: solid;
-    border-color: transparent #D21883 transparent transparent;
+    border-color: transparent grey transparent transparent;
   }
   /* Show the tooltip text when you mouse over the tooltip container */
   .fas:hover .tooltiptext, .far:hover .tooltiptext {
