@@ -157,13 +157,14 @@ aside {
     width: 60px;
     margin-left: 10px;
     font-size: 12px;
-    background-color: grey;
+    background-color: black;
     color: #fff;
     text-align: center;
     padding: 5px 0;
     border-radius: 5px;
     position: absolute;
     z-index: 1;
+    opacity: .6;
   }
   .fas .tooltiptext::after, .far .tooltiptext::after {
     content: " ";
@@ -174,7 +175,8 @@ aside {
     margin-top: -5px;
     border-width: 5px;
     border-style: solid;
-    border-color: transparent grey transparent transparent;
+    border-color: transparent black transparent transparent;
+    opacity: .6;
   }
   /* Show the tooltip text when you mouse over the tooltip container */
   .fas:hover .tooltiptext, .far:hover .tooltiptext {
