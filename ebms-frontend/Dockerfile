@@ -1,4 +1,13 @@
 FROM node:10
-COPY . /home/node/app
-CMD npm install | node run build
+
+WORKDIR /usr/src/app
+
+COPY package*.json ./
+
+RUN npm i --no-optional
+
+COPY . .
+
 EXPOSE 3000
+
+CMD ["npm", "run start"]
