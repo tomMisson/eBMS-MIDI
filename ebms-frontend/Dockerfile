@@ -1,3 +1,13 @@
 FROM node:10
-CMD ["npm",  "install"]
+
+WORKDIR /usr/src/app
+
+COPY package*.json ./
+
+RUN npm i --no-optional
+
+COPY . .
+
 EXPOSE 3000
+
+CMD ["npm", "run start"]

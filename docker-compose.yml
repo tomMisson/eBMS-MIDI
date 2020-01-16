@@ -1,22 +1,30 @@
-version: "3.3"
+version: '3'
 
 services: 
     database:
-        build: ./db
+        container_name: ebms-mongo
+        image: mongo
         ports:
             - 27017:27017
-
-
+            
     api: 
+        container_name: ebms-api
         build: ./api
         ports: 
-            - 5000
-        depends_on:
-            - database 
+            - 5000:5000
+        links: 
+            - database
+        environment: 
+            - PSWD="888888"
+            - USRNAME="admin"
+            - PORT=5000 
 
-    #website:
-    #    build: ./ebms-frontend
-    #    ports: 
-    #        - 3000:80
-    #    depends_on: 
-    #        - api
+#    website:
+#        container_name: ebms-UI
+#       restart: always
+#        build: ./ebms-frontend
+#        ports: 
+#            - 80:3000
+#        links: 
+#            - api
+#            - database

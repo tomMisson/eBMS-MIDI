@@ -4,7 +4,7 @@
   "description": "API to interface to the MIDI SDK for the Tyrells Products LTD MIDI gateway",
   "main": "server.js",
   "scripts": {
-    "test": "nodemon server.js"
+    "start": "nodemon server.js"
   },
   "repository": {
     "type": "git",
@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/HomeControlSoftwareInc/eBMS-MIDI#readme",
   "dependencies": {
+    "axios": "^0.19.0",
     "body-parser": "^1.19.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
