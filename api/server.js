@@ -33,12 +33,14 @@ auth.get('/', (req, res) => {
 
 auth.post('/', (req, res) => {
     const data = req.body
+    console.log(data);  
     
     if(data.username === process.env.USRNAME && data.password === process.env.PSWD)
     {
         let token = hash.sha256().update(req.headers['x-forwarded-for'] || req.connection.remoteAddress).digest('hex')
         
         res.json({"token":token})
+        console.log(token);
 
         MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
             if (err) throw err;
@@ -48,6 +50,7 @@ auth.post('/', (req, res) => {
             console.log("Inserted");
             db.close();
         })
+        res.send(200);
     }
     else
     {
@@ -58,22 +61,54 @@ auth.post('/', (req, res) => {
 /// API 
 
 api.get('*', (req,res) => {
-    axios.post('192.168.0.129/sdk.cgi', 'json='+encodeURI(req.body.command) , config)
-    .then(function (response) {
-        res.log(response);
-    })
-    .catch(function (error) {
-        res.log(error);
+
+    MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
+        if (err) throw err;
+        var dbo = db.db("ebms");
+        var reqIPhash =  hash.sha256().update(req.headers['x-forwarded-for'] || req.connection.remoteAddress).digest('hex')
+    
+        if(dbo.collection("apiKeys").find({"token":reqIPhash }))
+        {
+            axios.post(process.env.IP+'/sdk.cgi', 'json='+encodeURI(req.body.command) , config)
+            .then(function (response) {
+                res.log(response);
+            })
+            .catch(function (error) {
+                res.log(error);
+            });
+        }
+        else
+        {
+            res.send(401);
+        }
+    
+        db.close();
     });
 })
 
 net.get('*', (req,res) => {
-    axios.post('192.168.0.129/sdk.cgi', 'json='+encodeURI() , config)
-    .then(function (response) {
-        console.log(response);
-    })
-    .catch(function (error) {
-        console.log(error);
+
+    MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
+        if (err) throw err;
+        var dbo = db.db("ebms");
+        var reqIPhash =  hash.sha256().update(req.headers['x-forwarded-for'] || req.connection.remoteAddress).digest('hex')
+    
+        if(dbo.collection("apiKeys").find({"token":reqIPhash }))
+        {
+            axios.post(process.env.IP+'/network.cgi', 'json='+encodeURI(req.body.command) , config)
+            .then(function (response) {
+                res.log(response);
+            })
+            .catch(function (error) {
+                res.log(error);
+            });
+        }
+        else
+        {
+            res.send(401);
+        }
+    
+        db.close();
     });
 })
 
