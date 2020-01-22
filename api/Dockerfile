@@ -1,6 +1,13 @@
 FROM node:10
-CMD node server.js
-ENV PORT=5000 
-ENV USRNAME="admin"
-ENV PSWD = "888888"
+
+WORKDIR /usr/src/app
+
+COPY package*.json ./
+
+RUN npm i 
+
+COPY . .
+
 EXPOSE 5000
+
+CMD node server.js 

@@ -1,22 +1,189 @@
-.App {
+body, html {
+  margin: 0;
+  font-family: 'Segoe UI';
+}
+
+.bar {
+  width: 100%;
+  height: 50px;
+  background-color: #D1D5E9;
+}
+
+#title {
+  position: absolute;
+  right: 30%;
+  margin-top: 10px;
+  font-size: 24px;
+  color: #570f61;
+  font-family: 'Varela Round', sans-serif;
+}
+
+#menu {
+  width: 30px;
+  cursor: pointer;
+  margin: 15px;
+}
+
+#logo {
+  height: 40px;
+  width: 100px;
+  position: absolute;
+  right: 20px;
+  top: 5px;
+}
+
+.active {
+  display: block;
+  background: #D1D5E9;
+  z-index: 1;
+  width: 150px;
+  left: 0;
+  top: 0;
+}
+
+ul {
+  display: none;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+ul li a {
+  text-decoration: none;
+  font-size: .8em;
+  display: block;
+  padding: 1em 2em;
+  color: #fff;
+}
+
+ul li a:hover {
+  background: #E8E8E8;
+}
+
+.current {
+  background: #605ecc;
+}
+
+aside {
+  color: #fff;
+  padding: 0;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  background: none;
+}
+
+.fas, .far {
+  font-size: 18px;
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
+.fa-home {
+  color: firebrick;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+.fa-tablet-alt {
+  color: seagreen;
 }
 
-.App-link {
-  color: #09d3ac;
+.fa-eye {
+  color: navy;
 }
+
+.fa-map-marker-alt {
+  color: #f11717;
+}
+
+.fa-calendar-alt {
+  color: teal;
+}
+
+.fa-exclamation-triangle {
+  color: red;
+}
+
+.fa-cog {
+  color: #5e5e5e;
+}
+
+.tooltiptext {
+  margin-left: 20px;
+  color: #000;
+  font-size: 12px;
+}
+
+@media only screen and (min-width: 768px) {
+  #menu {
+    display: none;
+  }
+  #title {
+    right: 50%;
+  }
+  aside {
+    height: 100%;
+    width: 55px;
+    position: fixed;
+    padding-top: 20px;
+    background-color: #D1D5E9;
+  }
+  ul {
+    display: block;
+    list-style-type: none;
+    margin: 0;
+    padding: 1em;
+    text-align: center;
+  }
+  ul li a {
+    padding: 0;
+  }
+  ul li a:hover {
+    background: none;
+  }
+  .tooltiptext {
+    font-size: 12px;
+  }
+  .fas, .far {
+    font-size: 22px;
+    padding: 1em 0;
+    -webkit-transition: .2s;
+    transition: .2s;
+  }
+  .fas:hover, .far:hover {
+    -webkit-transform: scale(1.5);
+            transform: scale(1.5);
+  }
+  .fas .tooltiptext, .far .tooltiptext {
+    visibility: hidden;
+    width: 60px;
+    margin-left: 10px;
+    font-size: 12px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    padding: 5px 0;
+    border-radius: 5px;
+    position: absolute;
+    z-index: 1;
+    opacity: .6;
+  }
+  .fas .tooltiptext::after, .far .tooltiptext::after {
+    content: " ";
+    position: absolute;
+    top: 50%;
+    right: 100%;
+    /* To the left of the tooltip */
+    margin-top: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent black transparent transparent;
+    opacity: .6;
+  }
+  /* Show the tooltip text when you mouse over the tooltip container */
+  .fas:hover .tooltiptext, .far:hover .tooltiptext {
+    visibility: visible;
+  }
+  main {
+    margin-left: 60px;
+  }
+}
+/*# sourceMappingURL=main.css.map */
