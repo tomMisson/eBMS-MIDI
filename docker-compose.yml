@@ -1,34 +1,34 @@
 version: '3'
 
-services: 
+services:
     database:
         container_name: ebms-mongo
-        image: mongo:2.4
+        image: andresvidal/rpi3-mongodb3
         restart: always
         ports:
             - 27017:27017
-            
-    api: 
+
+    api:
         container_name: ebms-api
         image: api
         restart: always
         build: ./api
-        ports: 
+        ports:
             - 3000:5000
-        links: 
+        links:
             - database
-        environment: 
+        environment:
             - PSWD="888888"
             - USRNAME="admin"
-            - PORT=5000 
-        links: 
+            - PORT=5000
+        links:
             - database
 
     #website:
     #    container_name: ebms-UI
     #    restart: always
     #    build: ./ebms-frontend
-    #    ports: 
+    #    ports:
     #        - 80:80
     #    links:
     #        - database
