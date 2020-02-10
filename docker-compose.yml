@@ -4,27 +4,31 @@ services:
     database:
         container_name: ebms-mongo
         image: mongo
+        restart: always
         ports:
             - 27017:27017
             
     api: 
         container_name: ebms-api
+        image: api
+        restart: always
         build: ./api
         ports: 
-            - 5000:5000
+            - 3000:5000
         links: 
             - database
         environment: 
             - PSWD="888888"
             - USRNAME="admin"
             - PORT=5000 
+        links: 
+            - database
 
-#    website:
-#        container_name: ebms-UI
-#       restart: always
-#        build: ./ebms-frontend
-#        ports: 
-#            - 80:3000
-#        links: 
-#            - api
-#            - database
+    #website:
+    #    container_name: ebms-UI
+    #    restart: always
+    #    build: ./ebms-frontend
+    #    ports: 
+    #        - 80:80
+    #    links:
+    #        - database

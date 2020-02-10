@@ -5,17 +5,38 @@ const bodyParser = require('body-parser')
 const hash = require('hash.js')
 var MongoClient = require('mongodb').MongoClient;
 const axios = require('axios');
+const cors = require('cors');
+const { log, ExpressAPILogMiddleware } = require('@rama41222/node-logger');
 
-app.use(bodyParser.urlencoded({ extended: true }))
-app.use(bodyParser.json())
-
-const port = process.env.PORT || 3000
 const url = "mongodb://ebms-mongo:27017/ebms";
+
 let config = {
     headers: {
         "Content-Type": "application/x-www-form-urlencoded",
-    }
-  }
+    },
+    "port" : process.env.PORT || 3000,
+    "host" : "127.0.0.7",
+    "name" : "ebms-api", 
+    };
+
+MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
+    if (err) throw err;
+    var dbo = db.db("ebms");
+    
+    dbo.collection("apiKeys").insertOne({"token":"3e48ef9d22e096da6838540fb846999890462c8a32730a4f7a5eaee6945315f7"});
+
+    db.close();
+
+    console.log("Populated DB");
+});
+
+
+const logger = log({ console: true, file: false, label: config.name });
+
+app.use(bodyParser.urlencoded({ extended: true }))
+app.use(bodyParser.json())
+app.use(cors());
+app.use(ExpressAPILogMiddleware(logger, { request: true }));
 
 var auth = express()
 var api = express()
@@ -112,5 +133,9 @@ net.get('*', (req,res) => {
     });
 })
 
-
-app.listen(port, ()=>{ console.log(`App listening on ${port}!`)})
+app.listen(config.port, config.host, (e)=> {
+    if(e) {
+        throw new Error('Internal Server Error');
+    }
+    logger.info(`${config.name} running on ${config.host}:${config.port}`);
+});
