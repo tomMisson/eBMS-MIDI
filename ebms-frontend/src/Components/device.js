@@ -1,9 +1,23 @@
 import React, { Component } from 'react';
 import './device.css'
+
+
 class Devices extends Component {
     state = {  }
-    render() { 
-        return ( 
+    componentDidMount() {
+        let pageLinks = document.getElementById("menuOptions").childNodes;
+
+        pageLinks.forEach(element => {
+            const link = element.firstChild;
+            link.classList.remove("navLinkActive");
+            link.classList.add("navLinkInactive");
+            if(link.href === window.location.origin + "/devices") {
+                link.classList.add("navLinkActive");
+            }
+        });
+    }
+    render() {
+        return (
         
         <div id="device">
             <h2>Devices</h2>

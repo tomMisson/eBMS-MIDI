@@ -1,8 +1,14 @@
 import React, { Component } from 'react';
-import {BrowserRouter, Route, Link, Switch} from 'react-router-dom';
+import { BrowserRouter, Route, Link } from "react-router-dom";
 import './App.css';
 import RegisterBox from './Components/login';
 import Devices from './Components/device';
+import Home from './Components/home';
+import Views from './Components/views';
+import Rooms from './Components/rooms';
+import Schedule from './Components/schedule';
+import Alerts from './Components/alerts';
+import Settings from './Components/settings';
 
 
 
@@ -13,53 +19,72 @@ class App extends Component {
     }
 
     render() { 
+      function toggleNavigation(e) {
+        let navBar = document.getElementById("menu");
+        let sideSpacer = document.getElementById("sideSpacer");
+        let menuButton = document.getElementById("menuButton");
+        let navTitles = navBar.firstChild.childNodes;
+
+        if (navBar.style.width === "15em") {
+          sideSpacer.style.maxWidth = "";
+          navBar.style.width = "4.5em";
+          sideSpacer.style.width = "4.5em"
+          navTitles.forEach(element => {
+            element.childNodes[0].childNodes[1].style.display = ""
+          });
+          menuButton.src = "images/navIcons/menu.svg"
+        }
+        else {
+          sideSpacer.style.maxWidth = "100vw";
+          navBar.style.width = "15em";
+          sideSpacer.style.width = "15em";
+          
+          navTitles.forEach(element => {
+            element.childNodes[0].childNodes[1].style.display = "inline"
+          });
+          menuButton.src = "images/navIcons/close.svg"
+        }
+      }
+
         return ( 
           <BrowserRouter>
             <header>
-              <div className="bar">
-                <img id="menu" src="images/menu.svg" alt="menu"></img>
-                <b id="title">eBMS/MIDI Interface</b>
+              <section id = "headerLeft">
+                <img id="menuButton" onClick={toggleNavigation} src="images/navIcons/menu.svg" alt="menu"></img>
                 <img id="logo" src="images/tyrrell-products-logo.png" alt="logo"></img>
-              </div>
+              </section>
+              
+              <section id = "headerRight">
+                <Link to="/account"><img id="navAccountIcon" src="images/account_circle.svg" alt="Account"></img><h4>Account</h4></Link>
+              </section>
+              <h1 id="title">eBMS/MIDI Interface</h1>
             </header>
-            <aside>
-              <nav>
-                <ul>
-                  <li><Link to="/"><i className="fas fa-home"><span className="tooltiptext">Home</span></i></Link></li>
-                  <li><Link to="/devices"><i className="fas fa-tablet-alt"><span className="tooltiptext">Devices</span></i></Link></li>
-                  <li><Link to="/views"><i className="fas fa-eye"><span className="tooltiptext">Views</span></i></Link></li>
-                  <li><Link to="rooms"><i className="fas fa-map-marker-alt"><span className="tooltiptext">Rooms</span></i></Link></li>
-                  <li><Link to="/shedule"><i className="far fa-calendar-alt"><span className="tooltiptext">Schedule</span></i></Link></li>
-                  <li><Link to="/alerts"><i className="fas fa-exclamation-triangle"><span className="tooltiptext">Alerts</span></i></Link></li>
-                  <li><Link to="/settings"><i className="fas fa-cog"><span className="tooltiptext">Settings</span></i></Link></li>
+            <div id="topSpacer"></div>
+            <aside id="sideSpacer"></aside>
+            <nav id="menu">
+                <ul id="menuOptions">
+                  <li><Link to="/home"><img id="navHomeIcon" src="images/navIcons/home.svg" alt="Home"></img><h4>Home</h4></Link></li>
+                  <li><Link to="/devices"><img id="navDevicesIcon" src="images/navIcons/devices.svg" alt="Devices"></img><h4>Devices</h4></Link></li>
+                  <li><Link to="/views"><img id="navViewsIcon" src="images/navIcons/menu.svg" alt="Views"></img><h4>Views</h4></Link></li>
+                  <li><Link to="rooms"><img id="navRoomsIcon" src="images/navIcons/room.svg" alt="Rooms"></img><h4>Rooms</h4></Link></li>
+                  <li><Link to="/schedule"><img id="navScheduleIcon" src="images/navIcons/event.svg" alt="Schedule"></img><h4>Schedule</h4></Link></li>
+                  <li><Link to="/alerts"><img id="navAlertIcon" src="images/navIcons/warning.svg" alt="Alerts"></img><h4>Alerts</h4></Link></li>
+                  <li><Link to="/settings"><img id="navSettingsIcon" src="images/navIcons/settings.svg" alt="Settings"></img><h4>Settings</h4></Link></li>
                 </ul>
               </nav>
-            </aside>
+            
             <main>
-              <Switch>
-                <Route exact path="/" component={RegisterBox}>
-                  <RegisterBox></RegisterBox>
-                </Route>
-                <Route path="/devices">
-                  <Devices></Devices>
-                </Route>
-                <Route path="/views ">
-                  
-                </Route>
-                <Route path="/rooms">
-                  
-                </Route>
-                <Route path="/shedule">
-                  
-                </Route>
-                <Route path="/alerts">
-                  
-                </Route>
-                <Route path="/settings">
-                  
-                </Route>            
-              </Switch>
+              <Route exact path="/" component={Home}/>
+              <Route exact path="/home" component={Home}/>
+              <Route path="/devices" component={Devices}/>
+              <Route path="/views" component={Views}/>
+              <Route path="/rooms" component={Rooms}/>
+              <Route path="/schedule" component={Schedule}/>
+              <Route path="/alerts" component={Alerts}/>
+              <Route path="/settings" component={Settings}/>
+              <Route path="/account" component={RegisterBox}/>
             </main>
+            <footer></footer>
           </BrowserRouter>
           );
     }
