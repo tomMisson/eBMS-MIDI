@@ -21,7 +21,7 @@ If all has worked, if you type
 docker ps
 ```
 
-you should see 3 containers running: ebms-midi_database, ebms-midi_api & ebms-midi_frontend
+you should see 3 containers running: ebms-mongo, ebms-api & ebms-UI
 
 ## API default credentials 
 
@@ -33,4 +33,9 @@ This API gives direct access to the SDK which requires authentication for each r
     "password": "888888"
 }
 ```
+
+## Workflow 
+
+The conainers are spun up on the Pi on boot to mimic how it would be when you plug in the gateway. We then can access the UI via localhost:80 on the pi or for any external devices, port 80 on the machines IP address.  
+When we make a request, the request is first sent from the UI to the API running on the Pi which sends the correctly encoded data to the SDK for the update to occour.  
 
