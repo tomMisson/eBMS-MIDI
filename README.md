@@ -35,7 +35,7 @@ This API gives direct access to the SDK which requires authentication for each r
 }
 ```
 
-### Test api has been pre-populated
+### Test mongoDB has been pre-populated
 
 To test this, run these commands:
 ```bash
