@@ -13,7 +13,7 @@ To start the project locally
 docker-compose up
 ```
 
-## Validate sucessful start-up
+### Validate sucessful start-up
 
 If all has worked, if you type
 
@@ -23,7 +23,8 @@ docker ps
 
 you should see 3 containers running: ebms-mongo, ebms-api & ebms-UI
 
-## API default credentials 
+## API
+### API default credentials 
 
 This API gives direct access to the SDK which requires authentication for each request. To simplify this, you authenticate once at the start to log your IP address then you can make as many requests as you wish.
 
