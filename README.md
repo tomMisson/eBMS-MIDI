@@ -34,6 +34,32 @@ This API gives direct access to the SDK which requires authentication for each r
 }
 ```
 
+### Test api has been pre-populated
+
+To test this, run these commands:
+```bash
+sudo docker ps
+```
+Take the first 2 characters from the container ID
+```bash
+sudo docker exec -it [CONTAINER ID] mongo
+```
+Then, in the mongo shell you have opened, run:
+```javascript
+show dbs
+```
+This should show the ebms db, to select the ebms db, do:
+```javascript
+use ebms
+```
+To show the collections run:
+```javascript
+show collections
+```
+Then finally, to show the localhost API key that should be pre-populated, do:
+```javascript
+db.apiKeys.find().pretty();
+```
 ## Workflow 
 
 The conainers are spun up on the Pi on boot to mimic how it would be when you plug in the gateway. We then can access the UI via localhost:80 on the pi or for any external devices, port 80 on the machines IP address.  
