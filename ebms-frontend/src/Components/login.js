@@ -3,14 +3,26 @@ import './login.css';
 
 class RegisterBox extends Component {
 
-    state = {
+  constructor(props) {
+    super(props);
+    this.state = {
       username: "",
       email: "",
       password: "",
       errors: [],
       pwdState: null
     };
-  
+  }
+
+  componentDidMount() {
+    let pageLinks = document.getElementById("menuOptions").childNodes;
+
+    pageLinks.forEach(element => {
+        const link = element.firstChild;
+        link.classList.remove("navLinkActive");
+        link.classList.add("navLinkInactive");
+    });
+}
     showValidationErr(elm, msg) {
       this.setState((prevState) => ({
         errors: [
@@ -51,16 +63,13 @@ class RegisterBox extends Component {
       this.setState({pwdState: "weak"});
       if (e.target.value.length > 8) {
         this.setState({pwdState: "medium"});
-      } else if (e.target.value.length > 12) {
+      } if (e.target.value.length > 12) {
         this.setState({pwdState: "strong"});
       }
   
     }
   
-    openPopup(e) {
-      console.log("Hello world!");
-    }
-  
+    
     submitRegister(e) {
   
       console.log(this.state);
@@ -181,11 +190,8 @@ class RegisterBox extends Component {
             <button
               type="button"
               className="login-btn"
-              onHover={this
-              .openPopup
-              .bind(this)}
               onClick={this
-              .openPopup
+              .submitRegister
               .bind(this)}>Register</button>
   
           </div>
