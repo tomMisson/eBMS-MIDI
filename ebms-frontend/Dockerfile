@@ -1,4 +1,4 @@
-FROM node:10
+FROM node:10.19.0-alpine3.9 AS build
 
 WORKDIR /usr/src/app
 
@@ -8,6 +8,12 @@ RUN npm i --no-optional
 
 COPY . .
 
-EXPOSE 3000
+RUN npm run build
 
-CMD npm build
+FROM nginx:1.16.0-alpine
+
+COPY --from=build /usr/src/app/build /usr/share/nginx/html
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]

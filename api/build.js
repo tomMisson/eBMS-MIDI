@@ -7,6 +7,9 @@ MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
 
     dbo.createCollection("apiKeys")
     dbo.createCollection("devices")
+    dbo.createCollection("groups")
+    dbo.createCollection("schedule")
+    dbp.createCollection("alerts")
     
     dbo.collection("apiKeys").insertOne({"token":"3e48ef9d22e096da6838540fb846999890462c8a32730a4f7a5eaee6945315f7"});
 

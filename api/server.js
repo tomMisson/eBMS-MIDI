@@ -15,7 +15,7 @@ let config = {
         "Content-Type": "application/x-www-form-urlencoded",
     },
     "port" : process.env.PORT || 3000,
-    "host" : "127.0.0.7",
+    "host" : process.env.IP || "0.0.0.0",
     "name" : "ebms-api", 
     };
 
@@ -54,13 +54,13 @@ auth.get('/', (req, res) => {
 
 auth.post('/', (req, res) => {
     const data = req.body
-    console.log(data);  
+    console.log(data);
     
     if(data.username === process.env.USRNAME && data.password === process.env.PSWD)
     {
-        let token = hash.sha256().update(req.headers['x-forwarded-for'] || req.connection.remoteAddress).digest('hex')
+        let token = hash.sha256().update(req.headers['x-forwarded-for'] || req.connection.remoteAddress).digest('hex');
         
-        res.json({"token":token})
+        res.json({"token":token});
         console.log(token);
 
         MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
@@ -68,7 +68,7 @@ auth.post('/', (req, res) => {
             var dbo = db.db("ebms");
             
             dbo.collection("apiKeys").insertOne({"token":token});
-            console.log("Inserted");
+            logger.info("Added "+token + " to DB");
             db.close();
         })
         res.send(200);
@@ -82,7 +82,8 @@ auth.post('/', (req, res) => {
 /// API 
 
 api.get('*', (req,res) => {
-
+    
+    logger.info(`API Called`);
     MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
         if (err) throw err;
         var dbo = db.db("ebms");
@@ -135,7 +136,9 @@ net.get('*', (req,res) => {
 
 app.listen(config.port, config.host, (e)=> {
     if(e) {
-        throw new Error('Internal Server Error');
+        throw new Error('Internal Server Error');``
     }
     logger.info(`${config.name} running on ${config.host}:${config.port}`);
+
+    logger.info(`Gateway running on ${process.env.IP}`);
 });
