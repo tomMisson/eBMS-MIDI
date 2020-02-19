@@ -30,7 +30,12 @@ class App extends Component {
           navBar.style.width = "4.5em";
           sideSpacer.style.width = "4.5em"
           navTitles.forEach(element => {
-            element.childNodes[0].childNodes[1].style.display = ""
+            element.childNodes[0].childNodes[1].style.display = "";
+            /*element.childNodes[0].childNodes[1].style.visibility = "hidden";
+            
+            element.childNodes[0].childNodes[1].style.height = "0";
+            
+            element.childNodes[0].childNodes[1].style.width = "0";*/
           });
           menuButton.src = "images/navIcons/menu.svg"
         }
@@ -40,7 +45,12 @@ class App extends Component {
           sideSpacer.style.width = "15em";
           
           navTitles.forEach(element => {
-            element.childNodes[0].childNodes[1].style.display = "inline"
+            element.childNodes[0].childNodes[1].style.display = "inline";
+            /*element.childNodes[0].childNodes[1].style.visibility = "";
+            
+            element.childNodes[0].childNodes[1].style.height = "";
+            
+            element.childNodes[0].childNodes[1].style.width = "";*/
           });
           menuButton.src = "images/navIcons/close.svg"
         }
@@ -65,8 +75,8 @@ class App extends Component {
                 <ul id="menuOptions">
                   <li><Link to="/home"><img id="navHomeIcon" src="images/navIcons/home.svg" alt="Home"></img><h4>Home</h4></Link></li>
                   <li><Link to="/devices"><img id="navDevicesIcon" src="images/navIcons/devices.svg" alt="Devices"></img><h4>Devices</h4></Link></li>
-                  <li><Link to="/views"><img id="navViewsIcon" src="images/navIcons/menu.svg" alt="Views"></img><h4>Views</h4></Link></li>
-                  <li><Link to="rooms"><img id="navRoomsIcon" src="images/navIcons/room.svg" alt="Rooms"></img><h4>Rooms</h4></Link></li>
+                  {/* <li><Link to="/views"><img id="navViewsIcon" src="images/navIcons/menu.svg" alt="Views"></img><h4>Views</h4></Link></li> */}
+                  <li><Link to="rooms"><img id="navRoomsIcon" src="images/navIcons/room.svg" alt="Rooms"></img><h4>Groups</h4></Link></li>
                   <li><Link to="/schedule"><img id="navScheduleIcon" src="images/navIcons/event.svg" alt="Schedule"></img><h4>Schedule</h4></Link></li>
                   <li><Link to="/alerts"><img id="navAlertIcon" src="images/navIcons/warning.svg" alt="Alerts"></img><h4>Alerts</h4></Link></li>
                   <li><Link to="/settings"><img id="navSettingsIcon" src="images/navIcons/settings.svg" alt="Settings"></img><h4>Settings</h4></Link></li>

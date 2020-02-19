@@ -18,17 +18,18 @@ services:
         links:
             - database
         environment:
-            - PSWD="888888"
-            - USRNAME="admin"
+            - PSWD=888888
+            - USRNAME=admin
             - PORT=5000
+            - IP=0.0.0.0
         links:
             - database
 
-    #website:
-    #    container_name: ebms-UI
-    #    restart: always
-    #    build: ./ebms-frontend
-    #    ports:
-    #        - 80:80
-    #    links:
-    #        - database
+    website:
+        container_name: ebms-UI
+        restart: always
+        build: ./ebms-frontend
+        ports:
+           - 80:80
+        links:
+            - database
