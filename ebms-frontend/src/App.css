@@ -1,12 +1,16 @@
+@import url('https://fonts.googleapis.com/css?family=Montserrat&display=swap');
+
 body, html {
   margin: 0;
-  font-family: 'Segoe UI';
+  font-family: 'Montserrat';
+  background: #F6F6F6;
 }
+
 
 .bar {
   width: 100%;
   height: 50px;
-  background-color: #D1D5E9;
+  background-color: #fff;
 }
 
 #title {
@@ -33,12 +37,13 @@ body, html {
 }
 
 .active {
+  position: absolute;
   display: block;
   background: #D1D5E9;
   z-index: 1;
   width: 150px;
   left: 0;
-  top: 0;
+  top: 20;
 }
 
 ul {
@@ -124,7 +129,7 @@ aside {
     width: 55px;
     position: fixed;
     padding-top: 20px;
-    background-color: #D1D5E9;
+    background-color: #fff;
   }
   ul {
     display: block;
@@ -184,6 +189,7 @@ aside {
   }
   main {
     margin-left: 60px;
+   
   }
 }
 /*# sourceMappingURL=main.css.map */

@@ -1,0 +1,226 @@
+#device {
+    margin: 0;
+    padding: 0;
+}
+
+#banner {
+    position: absolute;
+    top: 0;
+    left: 100px;
+  
+}
+
+#search:focus::placeholder {
+    color: transparent;
+  }
+
+h3 {
+    margin-top: 12px;
+    margin-right: 50px;
+}
+
+#search-box {
+   position: absolute;
+   top: 10px;
+   left: 200px;
+    border-radius: 40px;
+    background:  #E6E5DD;
+    height: 30px;
+    width: 200px;
+}
+
+#search-btn {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+   margin-right: 5px;
+    float: right;
+    background: #fff;
+    border-radius: 50%;
+    padding: 5px;
+    
+}
+
+#search-btn:hover {
+    background: rgb(250, 250, 250);
+}
+
+#search {
+    border: none;
+    background: none;
+    outline: none;
+    margin-left: 10px;
+    margin-top: 5px;
+    line-height: 20px;
+    width: 150px;
+}
+
+.addDevice {
+  position: absolute;
+   top: 0;
+   left: 500px;
+   height: 50px;
+    width: 150px;
+    
+}
+
+h5 {
+  margin: 15px 0 0 0;
+  background: #fff;
+    border-radius: 50%;
+}
+
+#addDev-btn {
+  position: absolute;
+  top: 15px;
+   left: 90px;
+  float: right;
+  margin: 0;
+  background:#4DB8AD;
+  border-radius: 50%;
+  height: 30px;
+  width: 30px;
+}
+
+.deviceBar {
+ 
+    height: 100px;
+    width: calc(100% - 30px);
+    background: #fff;
+    margin: 10px;
+    box-shadow: 1px 1px 2px #888888;
+}
+
+.deviceBar:hover {
+    box-shadow: 3px 3px 5px #888888;
+}
+
+#light {
+    float: left;
+    width:35px;
+    height: 35px;
+    margin: 10px 20px 0 40px;
+    background: #4DB8AD;
+    border-radius: 50%;
+    padding: 20px;
+}
+
+b {
+    margin: 20px;
+    margin-right: 50px;
+    float: left;
+    color: #727272;
+}
+
+.control-title {
+    margin: 20px 20px 0 50px;
+    color: #727272;
+    font-size: 15px;
+}
+
+
+
+/* The switch - the box around the slider */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 30px;
+    height: 18px;
+    
+  }
+  
+  /* Hide default HTML checkbox */
+  .switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  
+  /* The slider */
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+  }
+  
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 15px;
+    width: 15px;
+    left: 0px;
+    bottom: 2;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+  }
+  
+  .input:checked + .slider {
+    background-color: #2196F3;
+  }
+  
+  .input:focus + .slider {
+    box-shadow: 0 0 1px #2196F3;
+  }
+  
+  .input:checked + .slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+  }
+  
+  /* Rounded sliders */
+  .slider.round {
+    border-radius: 34px;
+  }
+  
+  .slider.round:before {
+    border-radius: 50%;
+  }
+
+
+
+table, th, td {
+  border-spacing: 10px;
+  width: 400px;
+  text-align: center;
+  font-weight: normal;
+}
+
+.big-table {
+  width: 550px;
+}
+
+
+  .rooms select {
+      background: #4DB8AD;
+      color: #fff;
+      width: 100px;
+      height: 30px;
+      
+      font-size: 12px;
+      border: none;
+      outline: none;
+  }
+
+  .rooms:before {
+      content: "";
+      background: rgb(44, 161, 150);
+  }
+
+  .rooms:hover:before {
+    background: rgb(70, 212, 198);
+  }
+
+  .rooms select option:hover {
+    background: rgb(70, 212, 198);
+  }
+
+
+
