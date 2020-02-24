@@ -1,10 +1,12 @@
-FROM node:10.19.0-alpine3.9 AS build
+FROM arm32v6/node:10.19.0-alpine3.11 AS build
 
 WORKDIR /usr/src/app
 
 COPY package*.json ./
 
 RUN npm i --no-optional
+
+RUN npm audit fix
 
 COPY . .
 
