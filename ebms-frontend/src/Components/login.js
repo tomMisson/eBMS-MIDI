@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import './login.css';
 
 class RegisterBox extends Component {
 
@@ -13,16 +12,6 @@ class RegisterBox extends Component {
       pwdState: null
     };
   }
-
-  componentDidMount() {
-    let pageLinks = document.getElementById("menuOptions").childNodes;
-
-    pageLinks.forEach(element => {
-        const link = element.firstChild;
-        link.classList.remove("navLinkActive");
-        link.classList.add("navLinkInactive");
-    });
-}
     showValidationErr(elm, msg) {
       this.setState((prevState) => ({
         errors: [
