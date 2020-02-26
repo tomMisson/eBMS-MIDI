@@ -76,6 +76,7 @@ class Devices extends Component {
                             </td>
                         </tr>
                     </table>
+                    <button className="manage-btn">Manage Device</button>
                 </div>
                 <div className="deviceBar d2">
                     <img id="light" src= "images/weather.png" alt="themometer"></img>
@@ -107,11 +108,11 @@ class Devices extends Component {
 
                             </td>
                             <td>
-                                <button onClick={this.decreaseHeat}>-</button><span>{this.state.heat}</span><button onClick={this.increaseHeat}>+</button>
+                                <button className="control-btn" onClick={this.decreaseHeat}>-</button><span>{this.state.heat}</span><button className="control-btn" onClick={this.increaseHeat}>+</button>
                             </td>
                         </tr>
                     </table>
-                    
+                    <button className="manage-btn">Manage Device</button>
                 </div>
                 <div className="deviceBar d3">
                 <img id="light" src= "images/alarm.png" alt="alarm"></img>
@@ -140,6 +141,7 @@ class Devices extends Component {
                             </td>
                         </tr>
                     </table>
+                    <button className="manage-btn">Manage Device</button>
                 </div>
                 <div className="deviceBar d4">
                 <img id="light" src= "images/fan.png" alt="bulb"></img>
@@ -171,10 +173,11 @@ class Devices extends Component {
 
                             </td>
                             <td>
-                                <button onClick={this.decreaseAirCon}>-</button><span>{this.state.air}</span><button onClick={this.increaseAirCon}>+</button>
+                                <button className="control-btn" onClick={this.decreaseAirCon}>-</button><span>{this.state.air}</span><button className="control-btn" onClick={this.increaseAirCon}>+</button>
                             </td>
                         </tr>
                     </table>
+                    <button className="manage-btn">Manage Device</button>
                 </div>
             </section>
         </div> 

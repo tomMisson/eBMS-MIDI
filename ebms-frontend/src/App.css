@@ -3,7 +3,7 @@
 body, html {
   margin: 0;
   font-family: 'Montserrat';
-  background: #F6F6F6;
+  background: rgb(225, 236, 238);
 }
 
 
@@ -156,6 +156,7 @@ aside {
   .fas:hover, .far:hover {
     -webkit-transform: scale(1.5);
             transform: scale(1.5);
+            cursor: pointer;
   }
   .fas .tooltiptext, .far .tooltiptext {
     visibility: hidden;

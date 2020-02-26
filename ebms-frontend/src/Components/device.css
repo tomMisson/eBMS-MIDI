@@ -65,7 +65,7 @@ h3 {
 }
 
 h5 {
-  margin: 15px 0 0 0;
+  margin: 20px 0 0 0;
   background: #fff;
     border-radius: 50%;
 }
@@ -78,8 +78,51 @@ h5 {
   margin: 0;
   background:#4DB8AD;
   border-radius: 50%;
-  height: 30px;
-  width: 30px;
+  height: 25px;
+  width: 25px;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  outline: none;
+}
+
+#addDev-btn:hover {
+  background: rgb(60, 219, 203);
+}
+
+.control-btn {
+  background:#4DB8AD;
+  border-radius: 50%;
+  height: 20px;
+  width: 20px;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  margin: 0 10px;
+  outline: none;
+}
+
+.control-btn:hover {
+  background: rgb(60, 219, 203);
+}
+
+.manage-btn {
+  float: right;
+  background:#4DB8AD;
+  border-radius: 15px;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  outline: none;
+  padding: 10px 15px;
+  position: relative;
+  bottom: 50px;
+  right: 70px;
+  font-size: 14px;
+}
+
+.manage-btn:hover {
+  background: rgb(60, 219, 203);
 }
 
 .deviceBar {
@@ -186,12 +229,13 @@ b {
 
 
 
-table, th, td {
+ table, th, td {
   border-spacing: 10px;
   width: 400px;
   text-align: center;
   font-weight: normal;
 }
+
 
 .big-table {
   width: 550px;

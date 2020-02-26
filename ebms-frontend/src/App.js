@@ -1,16 +1,22 @@
 import React, { Component } from 'react';
 import {BrowserRouter, Route, Link, Switch} from 'react-router-dom';
 import './App.css';
-import RegisterBox from './Components/login';
 import Devices from './Components/device';
-import Lighting from './Components/lighting';
+import Schedule from './Components/schedule';
+import Alerts from './Components/alerts';
 
 
 class App extends Component {
-    
-    state = {
-      signedIn: true,
-    }
+  constructor(props) {
+    super(props);
+    this.state = { show: false };
+    this.toggleAlerts = this.toggleAlerts.bind(this);
+}
+
+toggleAlerts = () => {
+    const {show} = this.state;
+    this.setState({show:!show});
+}
 
     render() { 
         return ( 
@@ -24,40 +30,32 @@ class App extends Component {
             <aside>
               <nav>
                 <ul>
-                  <li><Link to="/"><i className="fas fa-home"><span className="tooltiptext">Home</span></i></Link></li>
+                  
                   <li><Link to="/devices"><i className="fas fa-tablet-alt"><span className="tooltiptext">Devices</span></i></Link></li>
-                  <li><Link to="/views"><i className="fas fa-eye"><span className="tooltiptext">Views</span></i></Link></li>
+                 
                   <li><Link to="rooms"><i className="fas fa-map-marker-alt"><span className="tooltiptext">Rooms</span></i></Link></li>
                   <li><Link to="/shedule"><i className="far fa-calendar-alt"><span className="tooltiptext">Schedule</span></i></Link></li>
-                  <li><Link to="/alerts"><i className="fas fa-exclamation-triangle"><span className="tooltiptext">Alerts</span></i></Link></li>
-                  <li><Link to="/settings"><i className="fas fa-cog"><span className="tooltiptext">Settings</span></i></Link></li>
+                  <li><i onClick={this.toggleAlerts} className="fas fa-exclamation-triangle"><span className="tooltiptext">Alerts</span></i></li>
+                  
                 </ul>
               </nav>
             </aside>
             <main>
+            {this.state.show && <Alerts/>}
               <Switch>
-                <Route exact path="/" component={RegisterBox}>
-                  <RegisterBox></RegisterBox>
-                </Route>
+                
                 <Route path="/devices">
                   <Devices></Devices>
-                  <Lighting></Lighting>
-                </Route>
-                <Route path="/views ">
                   
                 </Route>
+                
                 <Route path="/rooms">
                   
                 </Route>
                 <Route path="/shedule">
-                  
+                  <Schedule></Schedule>
                 </Route>
-                <Route path="/alerts">
-                  
-                </Route>
-                <Route path="/settings">
-                  
-                </Route>            
+                
               </Switch>
             </main>
           </BrowserRouter>

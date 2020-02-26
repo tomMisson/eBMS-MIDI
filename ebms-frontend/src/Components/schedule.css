@@ -1,0 +1,47 @@
+.schedule-table {
+    width: 90%;
+    background: #fff;
+    border-spacing: 0;
+    border-radius: 10px;
+    padding: 20px 20px 60px 20px;
+    margin: 50px auto 0 auto;
+    box-shadow: 1px 1px 2px #888888;
+    color: #727272;
+}
+
+tbody tr td {
+    border-bottom: 1px solid #888888;
+    padding: 10px;
+}
+
+#schedule-btn {
+    width: 20px;
+    height: 20px;
+    padding: 10px;
+    background:#4DB8AD;
+    border-radius: 5px;
+    cursor: pointer;
+    color: black;
+}
+
+#schedule-btn:hover {
+    background: rgb(60, 219, 203);
+}
+
+#addEvent-btn {
+  background:#4DB8AD;
+  border-radius: 10px;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  outline: none;
+  padding: 10px 15px;
+}
+
+#addEvent-btn:hover {
+    background: rgb(60, 219, 203);
+}
+
+#c3,#c4,#c5 {
+    background: rgb(54, 54, 180);
+}
