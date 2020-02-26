@@ -5,6 +5,7 @@
   "dependencies": {
     "@iconify/react": "^1.1.1",
     "jquery": "^3.4.1",
+    "moment": "^2.24.0",
     "react": "^16.11.0",
     "react-dom": "^16.11.0",
     "react-router-dom": "^5.1.2",
