@@ -6,7 +6,7 @@ COPY package*.json ./
 
 RUN npm i --no-optional
 
-RUN npm audit fix
+RUN npm audit fix --no-optional
 
 COPY . .
 

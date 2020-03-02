@@ -4,7 +4,9 @@ WORKDIR /usr/src/app
 
 COPY . .
 
-RUN npm i
+RUN npm i --no-optional
+ 
+RUN npm audit fix --no-optional
 
 COPY . .
 
