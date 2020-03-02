@@ -1,10 +1,12 @@
-FROM arm32v6/node:10.19.0-alpine3.11
+FROM node:10
 
 WORKDIR /usr/src/app
 
 COPY . .
 
-RUN npm i
+RUN npm i --no-optional
+ 
+RUN npm audit fix --no-optional
 
 COPY . .
 
