@@ -211,39 +211,45 @@ function postGateway(postData, hashedIP, page, callback){
         'json': postData
     };
 
-    if(!verifyIdentity(hashedIP)) {
-        logger.info("Invalid credentials");
-    }
-    else{
-        request(requestOptions, function (err, res, body) {
-            if (err) {
-                return callback(null, err);
-            }
-            return callback(body, false);
-        });
-    }
+    verifyIdentity(hashedIP, function(authorised, error) {
+        if (error) throw error;
+        else if (authorised) {
+            request(requestOptions, function (err, res, body) {
+                if (err) {
+                    return callback(null, err);
+                }
+                return callback(body, false);
+            });
+            logger.info("Authorised");
+        }
+        else logger.info("Invalid credentials");
+    });
 }
 ///
 ///Pre-populates the database with the devices
 ///
-function loadDevices() {
-
+function initializeDatabase(callback) {
     MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
-        if (err) throw err;
+        if (err) return callback(null, err);
         let ebmsDB = db.db("ebms");
         
-        ebmsDB.collection("devices").insert();
-        ebmsDB.collection("rooms").insert();
-        ebmsDB.collection("schedule").insert();
-        ebmsDB.collection("alerts").insert();
-        ebmsDB.collection("apiKeys").insertOne({"token":"3e48ef9d22e096da6838540fb846999890462c8a32730a4f7a5eaee6945315f7"}); //sha265 for 127.0.0.1
+        // ebmsDB.collection("devices").insertOne();
+        // ebmsDB.collection("rooms").insertOne();
+        // ebmsDB.collection("schedule").insertOne();
+        // ebmsDB.collection("alerts").insertOne();
+        ebmsDB.collection("apiKeys").insertOne({"token":"3e48ef9d22e096da6838540fb846999890462c8a32730a4f7a5eaee6945315f7"}); //sha256 for 127.0.0.1
         
         db.close();
-                
+        
         logger.info("Added localhost token to DB");
+
+        return callback(true, false);
     
     });
+}
 
+function loadDevices() {
+    logger.info("Loading Devices");
     postGateway('{"control":{"cmd":"getdevice"}}', "3e48ef9d22e096da6838540fb846999890462c8a32730a4f7a5eaee6945315f7" , 'sdk.cgi', function(data, err){
         if(!err){
             MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
@@ -284,30 +290,20 @@ function loadDevices() {
 ///
 /// VALIDATE token 
 ///
-
-function verifyIdentity(reqIPhash){
+function verifyIdentity(reqIPhash, callback){
     MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
         if (err) throw err;
         var dbo = db.db("ebms");
-    
         dbo.collection("apiKeys").findOne({"token":reqIPhash}, function(err, item) {
-            if (err) 
-            {
-                return false;
-            } 
-            else {
-                if(item.token === reqIPhash) {
-                    return true;
-
-                }
-                else {
-                    return false;
-                }
-            }
+            if (err) return callback(false, err);
+            return callback(item.token === reqIPhash, null);
         });    
         db.close();
     });
 }
 
-
-loadDevices(); //Call to load the devices
+initializeDatabase(function(success, error) {
+    if (success) loadDevices();
+    else throw error;
+});
+ //Call to load the devices
