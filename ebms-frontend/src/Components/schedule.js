@@ -1,12 +1,24 @@
 import React, { Component } from 'react';
 import './schedule.css';
 import Calendar from './calendar';
+import Schedule_Event from './schedule_event';
 
 class Schedule extends Component {
     constructor(props) {
         super(props);
-        this.state = { show: false };
+        this.state = { 
+            show: false, 
+            showEvent: false,
+            bgColour: 'none'
+        };
+
         this.toggleCalendar = this.toggleCalendar.bind(this);
+        this.toggleEvent = this.toggleEvent.bind(this);
+        this.changeSchedule = this.changeSchedule.bind(this);
+    }
+
+    changeSchedule(colour) {
+        this.setState({bgColour: colour});
     }
 
     toggleCalendar = () => {
@@ -14,10 +26,16 @@ class Schedule extends Component {
         this.setState({show:!show});
     }
 
+    toggleEvent = () => {
+        const {showEvent} = this.state;
+        this.setState({showEvent:!showEvent});
+    }
+
     render() { 
         return ( 
             <div className="schedule-container">
                 {this.state.show && <Calendar/>}
+                {this.state.showEvent && <Schedule_Event/>}
                 <table className="schedule-table">
                     <thead>
                         <tr className="schedule-header">
@@ -25,7 +43,7 @@ class Schedule extends Component {
                                <h3>Daily Schedule</h3> 
                             </td>
                             <td colSpan="5">
-                                <button id="addEvent-btn">Add Event</button>
+                                <button onClick={this.toggleEvent} id="addEvent-btn">Add Event</button>
                             </td>
                             <td colSpan="5">
                                 <img onClick={this.toggleCalendar} src="images/schedule.svg" alt ="calendar" id="schedule-btn"></img>
@@ -69,14 +87,14 @@ class Schedule extends Component {
                             <td></td>
                             <td></td>
                             <td></td>
-                            <td id="c3"></td>
-                            <td id="c4"></td>
-                            <td id="c5"></td>
                             <td></td>
                             <td></td>
                             <td></td>
-                            <td></td>
-                            <td></td>
+                            <td style={{backgroundColor:this.state.bgColour}}></td>
+                            <td style={{backgroundColor:this.props.bgColour}}></td>
+                            <td style={{backgroundColor:this.props.bgColour}}></td>
+                            <td style={{backgroundColor:this.props.bgColour}}></td>
+                            <td style={{backgroundColor:this.props.bgColour}}></td>
                             <td></td>
                             <td></td>
                             <td></td>

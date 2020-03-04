@@ -34,7 +34,7 @@ toggleAlerts = () => {
                   <li><Link to="/devices"><i className="fas fa-tablet-alt"><span className="tooltiptext">Devices</span></i></Link></li>
                  
                   <li><Link to="rooms"><i className="fas fa-map-marker-alt"><span className="tooltiptext">Rooms</span></i></Link></li>
-                  <li><Link to="/shedule"><i className="far fa-calendar-alt"><span className="tooltiptext">Schedule</span></i></Link></li>
+                  <li><Link to="/schedule"><i className="far fa-calendar-alt"><span className="tooltiptext">Schedule</span></i></Link></li>
                   <li><i onClick={this.toggleAlerts} className="fas fa-exclamation-triangle"><span className="tooltiptext">Alerts</span></i></li>
                   
                 </ul>
@@ -52,7 +52,7 @@ toggleAlerts = () => {
                 <Route path="/rooms">
                   
                 </Route>
-                <Route path="/shedule">
+                <Route path="/schedule">
                   <Schedule></Schedule>
                 </Route>
                 

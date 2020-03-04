@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import './device.css'
+import './device.css';
 class Devices extends Component {
     constructor(props) {
         super(props);
