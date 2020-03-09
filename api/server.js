@@ -90,7 +90,7 @@ auth.post('/', (req, res) => {
     console.log(data);
     var reqIPhash =  hash.sha256().update(req.headers['x-forwarded-for'] || req.connection.remoteAddress).digest('hex');
     //If they exist in the DB then just 200
-    if(verifyIdentity(reqIPhash)){
+    if(verifyIdentity(reqIPhash)){//MAY CAUSE ISSUES LATER WHEN USER CONNECTS TO WEB UI UN-AUTHED
         res.send(200);
     }
     else
@@ -128,7 +128,7 @@ api.post('/', (req,res) => {
 
     logger.info(req.body);
     var reqIPhash =  hash.sha256().update(req.headers['x-forwarded-for'] || req.connection.remoteAddress).digest('hex');
-    postGateway(req.body.command, reqIPhash,'sdk.cgi', function(data, err){
+    postGateway(req.body, reqIPhash,'sdk.cgi', function(data, err){
         if(!err){
             res.send(data);
         }
@@ -141,40 +141,162 @@ api.post('/', (req,res) => {
 
 ///DEVICES
 devices.post('/', (req,res) => {
-   //Update devices in DB with SDK
+   //TBC
 });
 devices.get('/', (req,res) => {
-    //get all device info from SDK
+    var reqIPhash =  hash.sha256().update(req.headers['x-forwarded-for'] || req.connection.remoteAddress).digest('hex');
+    logger.info("Loading Devices");
+    postGateway('{"control":{"cmd":"getdevice"}}', reqIPhash , 'sdk.cgi', function(data, err){
+        if(!err){
+            res.send(data);
+        }
+        else{
+            res.send(500);
+        }
+    });
 });
 devices.get('/:deviceID', (req,res) => {
-    //Get specific status of device by ID
+    var id = parseInt(req.params.deviceID);
+    var reqIPhash =  hash.sha256().update(req.headers['x-forwarded-for'] || req.connection.remoteAddress).digest('hex');
+    logger.info("Loading Devices");
+    postGateway('{"control":{"cmd":"getdevice"}}', reqIPhash , 'sdk.cgi', function(data, err){
+        if(!err){
+            //loop through the list devices and return the object wih the UID == id
+            res.send(data);
+        }
+        else{
+            res.send(500);
+        }
+    });
 });
 
 ///SCHEDULE
 schedule.post('/', (req,res) => {
-    //Add new scheduled event
+    var startTime = req.body.start;
+    var endTime = req.body.end;
+    var day = req.body.day;
+    var title = req.body.title;
+    var devices = req.body.devices;
+
+    var obj = {
+        "start":startTime,
+        "end":endTime,
+        "day":day,
+        "name":title,
+        "devices":devices
+    }
+
+    if(verifyIdentity(reqIPhash)){
+        MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
+            if (err) throw err;
+            var ebmsDB = db.db("ebms");
+    
+            ebmsDB.collection("schedule").insertOne(obj, function(err, result) {
+                if (err) throw err;
+                res.send(200);
+                ebmsDB.close();
+            });
+            logger.info("Added new event to schedule");
+        });
+    }
+    else{
+
+    }
 });
 schedule.get('/', (req,res) => {
-    //Get the entire schedule
+    var reqIPhash =  hash.sha256().update(req.headers['x-forwarded-for'] || req.connection.remoteAddress).digest('hex');
+    if(verifyIdentity(reqIPhash)){
+        MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
+            if (err) throw err;
+            var ebmsDB = db.db("ebms");
+    
+            ebmsDB.collection("schedule").find({}, function(err, result) {
+                if (err) throw err;
+                res.send(result);
+                ebmsDB.close();
+            });
+        });
+    }
+    else
+    {
+        res.send(401);
+    }
 });
 
 ///ALERTS
 alerts.post('/', (req,res) => {
     //Push new Alert
+    // Will need to regularly poll this endpoint and rules for an alert implemented 
 });
 alerts.get('/', (req,res) => {
-    // Get Alert log
+    MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
+        if (err) throw err;
+        var ebmsDB = db.db("ebms");
+
+        ebmsDB.collection("alerts").find({}, function(err, result) {
+            if (err) throw err;
+            res.send(result);
+            ebmsDB.close();
+        });
+        logger.info("Added new event to schedule");
+    });
 });
 
 ///ROOMS
 rooms.post('/', (req,res) => {
-    //Update all the rooms with their respected devices 
+    //Update all the rooms with devices or names
+    var title = req.body.title;
+    var devices = req.body.devices;
+
+    var obj = {
+        "name":title,
+        "devices":devices
+    }
+    ebmsDB.collection("apiKeys").insertOne(obj, function(err, result) {
+        if (err) throw err;
+        res.send(result);
+        ebmsDB.close();
+    });
+    logger.info("Added new event to schedule");
 });
 rooms.get('/', (req,res) => {
-    //Get all devices in all rooms
+    var reqIPhash =  hash.sha256().update(req.headers['x-forwarded-for'] || req.connection.remoteAddress).digest('hex');
+    if(verifyIdentity(reqIPhash)){
+        MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
+            if (err) throw err;
+            var ebmsDB = db.db("ebms");
+    
+            ebmsDB.collection("rooms").find({}, function(err, result) {
+                if (err) throw err;
+                res.send(result);
+                ebmsDB.close();
+            });
+        });
+    }
+    else
+    {
+        res.send(401);
+    }
 });
 rooms.get('/:roomName', (req, res)=> {
-    //Get room by room name
+    var reqIPhash =  hash.sha256().update(req.headers['x-forwarded-for'] || req.connection.remoteAddress).digest('hex');
+    var room = req.params.roomName;
+    if(verifyIdentity(reqIPhash)){
+        MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
+            if (err) throw err;
+            var ebmsDB = db.db("ebms");
+    
+            ebmsDB.collection("rooms").find({"name": room}, function(err, result) {
+                if (err) throw err;
+                res.send(result);
+                ebmsDB.close();
+            });
+        });
+    }
+    else
+    {
+        res.send(401);
+    }
 });
 
 
@@ -194,6 +316,9 @@ net.post('/', (req,res) => {
         }       
     });
 });
+net.get('', () => {res.send("POST /net to send command")});
+
+
 
 
 ///
@@ -233,10 +358,10 @@ function initializeDatabase(callback) {
         if (err) return callback(null, err);
         let ebmsDB = db.db("ebms");
         
-        // ebmsDB.collection("devices").insertOne();
-        // ebmsDB.collection("rooms").insertOne();
-        // ebmsDB.collection("schedule").insertOne();
-        // ebmsDB.collection("alerts").insertOne();
+        // ebmsDB.createCollection("devices");
+        // ebmsDB.createCollection("rooms");
+        // ebmsDB.createCollection("schedule");
+        // ebmsDB.createCollection("alerts");
         ebmsDB.collection("apiKeys").insertOne({"token":"3e48ef9d22e096da6838540fb846999890462c8a32730a4f7a5eaee6945315f7"}); //sha256 for 127.0.0.1
         
         db.close();
@@ -296,7 +421,7 @@ function verifyIdentity(reqIPhash, callback){
         var dbo = db.db("ebms");
         dbo.collection("apiKeys").findOne({"token":reqIPhash}, function(err, item) {
             if (err) return callback(false, err);
-            return callback(item.token === reqIPhash, null);
+            else return callback(true, null);
         });    
         db.close();
     });
