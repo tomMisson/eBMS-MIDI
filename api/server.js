@@ -303,7 +303,7 @@ function verifyIdentity(reqIPhash, callback){
 }
 
 initializeDatabase(function(success, error) {
-    if (success) loadDevices();
-    else throw error;
+    // if (success) loadDevices();
+    // else throw error;
 });
  //Call to load the devices
