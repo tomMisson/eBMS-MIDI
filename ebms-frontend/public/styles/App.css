@@ -4,6 +4,7 @@
   border: 0;
   font-family: "Roboto",Sans-serif;
   box-sizing: border-box;
+  transition: width 0.3s, height 0.3s, padding 0.3s, background-color 0.3s;
 }
 
 button {
@@ -12,21 +13,39 @@ button {
 
 body {
   top: 0px;
-  position: absolute;
   width: 100%;
-  display: inline;
   background: rgb(252, 249, 251);
+}
+
+.invisible {
+  height: 0;
+  max-height: 0;
+  width: 0;
+  max-width: 0;
+  visibility: hidden;
+  margin: 0;
+  position: fixed;
+}
+
+.top {top:0}
+.bottom {bottom:0}
+.left {left:0}
+.right {right:0}
+
+main {
+  min-height: calc(100vh - 3.5em);
+  max-height: calc(100vh - 3.5em);
+  overflow: auto;
 }
 
 header  {
   top: 0;
-  position: fixed;
   background-color: white;
-  width: 100%;
-  box-sizing: border-box;
   text-align: center;
   height: 3.5em;
   line-height: 3.5em;
+  vertical-align: middle;
+  color: #61116a;
 }
 
 #headerLeft {
@@ -40,21 +59,6 @@ header  {
   width: min-content;
   line-height: 100%;
   height: 100%;
-}
-
-#root {
-  width: 100vw;
-  height: fit-content;
-}
-
-#topSpacer {
-  top: 0;
-  height: 3.5em;
-}
-
-#title {
-  vertical-align: middle;
-  color: #61116a;
 }
 
 #menuButton {
@@ -139,31 +143,28 @@ nav li:active {
   background-color:  rgb(187, 187, 187);
 }
 
-#menu {
-  position: fixed;
-}
-
 #sideSpacer {
   visibility: hidden;
 }
 
-#menu, #sideSpacer {
-    min-height: 1em;
-    list-style-type: none;
-
-    width: 4.5em;
-    height: 100%;
-    background-color: white;
-    min-height: 10em;
-    float: left;
-    transition: width 0.3s, height 0.6s;
+#menu  {
+  list-style-type: none;
+  position: fixed;
+  background-color: white;
+  float: left;
+  min-height: calc(100vh - 3.5em);
+  max-height: calc(100vh - 3.5em);
+  
+  z-index: 1000;
 }
 
-main {
-  height: fit-content;
-  overflow: auto;
-    
-  box-sizing: border-box;
+.expanded {
+  width: 100%;
+}
+
+.closed {
+  width: 0;
+  visibility: hidden;
 }
 
 #AddDevice {
@@ -184,10 +185,6 @@ main {
 .device:hover {
   
   box-shadow: 2px 2px 2px #888888;
-}
-
-.inline {
-  display: inline;
 }
 
 .deviceTitle {
@@ -302,12 +299,74 @@ input:checked + .slider:before {
   height: inherit;
 }
 
+.pr-main{padding-right: 0;}
+.pl-main{padding-left: 0;}
 
-/* A media query that adjust the page to fit smaller displays such as laptops */
-@media (min-width: 1025px) and (max-width: 1280px) {
+
+/* Small devices (landscape phones, 576px and up) */
+@media (min-width: 576px) {
+  
 }
 
-/* A media query that adjust the page to tablet and mobile displays */	
-@media (min-width: 0px) and (max-width: 1024px) {
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) and (max-width: 991px) {
+  .pad-main-2{padding: 0;}
+  .pad-main-1{padding: 0;}
 
+  .expanded {
+    width: 15em;
+  }
+
+  .expanded h4 {
+    display: inline;
+  }
+
+  .block {
+    width: 100vw;
+    height: calc(100vh - 3.5em);
+    z-index: 750;
+    background-color: #60606027;
+    position: fixed;
+  }
+}
+
+/* Large devices (desktops, 992px and up) */
+@media (min-width: 992px) {
+  .pad-main-2{padding: 0 calc(100% / 15);}
+  .pad-main-1{padding: 0;}
+
+  #menu {
+    position: initial;
+  }
+
+  .expanded {
+    width: 15em;
+  }
+
+  .expanded h4 {
+    display: inline;
+  }
+}
+
+/* Extra large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px) {
+  .pad-main-2{padding: 0 calc(100% / 9);}
+  .pad-main-1{padding: 0 calc(100% / 18);}
+  
+  #menu {
+    position: initial;
+  }
+
+  .expanded {
+    width: 15em;
+  }
+
+  .expanded h4 {
+    display: inline;
+  }
+
+  .closed {
+    width: 4.5em;
+    visibility: initial;
+  }
 }

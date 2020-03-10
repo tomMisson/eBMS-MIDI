@@ -20,10 +20,11 @@ services:
             - USRNAME=admin
             - PORT=5000
             - IP=0.0.0.0
-            - GATEWAYIP=192.168.0.129
+            - GATEWAYIP=192.168.0.49
             - GATEWAYPORT=80
         links:
             - database
+            # api://api:5000
 
     website:
         container_name: ebms-UI

@@ -16,6 +16,7 @@ class Gateway extends Component {
                 </section>
 
                 <section class="deviceBody">
+                    
                     <h3 class="deviceTitle inline">Gateway Siren</h3>
                     <div id="gatewaySiren_Controls">
                         <select id='' name='gatewaySiren'>
