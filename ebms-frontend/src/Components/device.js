@@ -1,185 +1,80 @@
 import React, { Component } from 'react';
+import Gateway from './devices/gatewaySiren';
+import MeterSwitch from './devices/energyPlug';
+import FloodMultiSensor from './devices/FloodMulti-Sensor';
+import MasterSwitch from './devices/SWITCH_ALL';
+import ReactDOM, { unmountComponentAtNode } from 'react-dom'
+
 class Devices extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            heat: 0,
-            air: 0
-        };
+    state = { 
+        devices:[{uid:0, name:"gatewaySiren"}]
     }
 
-    increaseHeat = () => {
-        if (this.state.heat >=80) {
-           return
-        }
-        else this.setState({heat: this.state.heat + 1});
+    changeActiveNav() {
+        let pageLinks = document.getElementById("menuOptions").childNodes;
+
+        pageLinks.forEach(element => {
+            const link = element.firstChild;
+            link.classList.remove("navLinkActive");
+            link.classList.add("navLinkInactive");
+            if(link.href === window.location.origin + "/devices") {
+                link.classList.add("navLinkActive");
+            }
+        });
     }
 
-    decreaseHeat = () => {
-        if (this.state.heat <=0) {
-            return
-         }
-        else this.setState({heat: this.state.heat - 1});
+    componentDidUpdate() {
+        this.changeActiveNav();
+        const devicesSection = document.getElementById('devices');
+        this.state.devices.map(function(device){
+            const deviceContainer = document.createElement("div");
+            deviceContainer.id = device.uid;
+            devicesSection.appendChild(deviceContainer);
+            if (device.name == "gatewaySiren") 
+                ReactDOM.render(<Gateway uid={device.uid}/>, document.getElementById(device.uid));
+            else if (device.name == "SWITCH_ALL") {}
+                //return <MasterSwitch key={device.uid}/>
+            else if (device.name == "EnergyPlug ") 
+                ReactDOM.render(<MeterSwitch uid={device.uid}/>, document.getElementById(device.uid));  
+            else if (device.name == "FloodMulti-Sensor ") {}
+                //return <Gateway key={device.uid}/>
+        });
     }
 
-    increaseAirCon = () => {
-        this.setState({air: this.state.air + 1});
-    }
+    componentWillUnmount() {
+        
+        this.state.devices.map(function (device) { 
+            unmountComponentAtNode(document.getElementById(device.uid));
+         });
+    } 
 
-    decreaseAirCon = () => {
-        this.setState({air: this.state.air - 1});
+    async UNSAFE_componentWillMount() {
+        
+        const {show} = this.state;
+        this.setState({show:!show});
+
+        const response = await fetch("http://" +  window.location.hostname +":3000/api/devices");
+        const data = await response.json();
+        const supportedDevices = ["Flood Multi-Sensor ", "Energy Plug ", "SWITCH_ALL"];
+        data.forEach(element => {
+            let deviceName = '';
+            element.channels.forEach(channel => {
+                if (supportedDevices.includes(channel.name)) {
+                    deviceName = channel.name.replace(" ", "");
+                }
+            });
+            if (deviceName != '') this.state.devices.push({'uid':element._id, 'name':deviceName});
+        });
+        this.componentDidUpdate();
     }
 
     render() { 
         return ( 
-        
-        <div id="device">
-            <header id="banner">
-                <h3>Device Manager</h3>
-                <div id="search-box">
-                    <input id="search" placeholder="search device"></input>
-                    <img id="search-btn" src="images/search.svg" alt="search"></img>
-                </div>
-                <div className="addDevice">
-                    <h5>Add Device</h5>
-                    <button id="addDev-btn">+</button>
-                </div>
-            </header>
             <section id="devices">
-                <div className="deviceBar d1">
-                    <img id="light" src= "images/idea.png" alt="bulb"></img>
-                    <b>Lighting</b>
-                    <table>
-                        <tr>
-                            <th className="control-title">On/Off</th>
-                            <th className="control-title">Room</th>
-                            <th className="control-title">Status</th>
-                        </tr>
-                        <tr>
-                            <td>
-                            <label className="switch">
-                                <input className= "input" type="checkbox"></input>
-                                <span className="slider round"></span>
-                            </label>
-                            </td>
-                            <td>
-                            <div className="rooms">
-                                <select>
-                                    <option value="Living room">Living room</option>
-                                    <option value="Kitchen">Kitchen</option>
-                                    <option value="Bedroom">Bedroom</option>
-                                </select>
-                            </div>
-                            </td>
-                            <td>
-                            </td>
-                        </tr>
-                    </table>
-                    <button className="manage-btn">Manage Device</button>
-                </div>
-                <div className="deviceBar d2">
-                    <img id="light" src= "images/weather.png" alt="themometer"></img>
-                    <b>Heating</b>
-                    <table className="big-table">
-                        <tr>
-                            <th className="control-title">On/Off</th>
-                            <th className="control-title">Room</th>
-                            <th className="control-title">Status</th>
-                            <th className="control-title">Temperature</th>
-                        </tr>
-                        <tr>
-                            <td>
-                            <label className="switch">
-                                <input className= "input" type="checkbox"></input>
-                                <span className="slider round"></span>
-                            </label>
-                            </td>
-                            <td>
-                            <div className="rooms">
-                                <select>
-                                    <option value="Living room">Living room</option>
-                                    <option value="Kitchen">Kitchen</option>
-                                    <option value="Bedroom">Bedroom</option>
-                                </select>
-                            </div>
-                            </td>
-                            <td>
+                
+                <button id="AddDevice"><img class="positiveIcon" src="images/generalIcons/add.svg"></img></button>
+                </section>
 
-                            </td>
-                            <td>
-                                <button className="control-btn" onClick={this.decreaseHeat}>-</button><span>{this.state.heat}</span><button className="control-btn" onClick={this.increaseHeat}>+</button>
-                            </td>
-                        </tr>
-                    </table>
-                    <button className="manage-btn">Manage Device</button>
-                </div>
-                <div className="deviceBar d3">
-                <img id="light" src= "images/alarm.png" alt="alarm"></img>
-                    <b>Alarms</b>
-                    <table>
-                        <tr>
-                            <th className="control-title">On/Off</th>
-                            <th className="control-title">Room</th>
-                            <th className="control-title">Status</th>
-                        </tr>
-                        <tr>
-                            <td>
-                            <label className="switch">
-                                <input className= "input" type="checkbox"></input>
-                                <span className="slider round"></span>
-                            </label>
-                            </td>
-                            <td>
-                            <div className="rooms">
-                                <select>
-                                    <option value="Living room">Living room</option>
-                                    <option value="Kitchen">Kitchen</option>
-                                    <option value="Bedroom">Bedroom</option>
-                                </select>
-                            </div>
-                            </td>
-                        </tr>
-                    </table>
-                    <button className="manage-btn">Manage Device</button>
-                </div>
-                <div className="deviceBar d4">
-                <img id="light" src= "images/fan.png" alt="bulb"></img>
-                    <b>Air-Con</b>
-                     <table className="big-table">
-                        <tr>
-                            <th className="control-title">On/Off</th>
-                            <th className="control-title">Room</th>
-                            <th className="control-title">Status</th>
-                            <th className="control-title">Temperature</th>
-                        </tr>
-                        <tr>
-                            <td>
-                            <label className="switch">
-                                <input className= "input" type="checkbox"></input>
-                                <span className="slider round"></span>
-                            </label>
-                            </td>
-                            <td>
-                            <div className="rooms">
-                                <select>
-                                    <option value="Living room">Living room</option>
-                                    <option value="Kitchen">Kitchen</option>
-                                    <option value="Bedroom">Bedroom</option>
-                                </select>
-                            </div>
-                            </td>
-                            <td>
-
-                            </td>
-                            <td>
-                                <button className="control-btn" onClick={this.decreaseAirCon}>-</button><span>{this.state.air}</span><button className="control-btn" onClick={this.increaseAirCon}>+</button>
-                            </td>
-                        </tr>
-                    </table>
-                    <button className="manage-btn">Manage Device</button>
-                </div>
-            </section>
-        </div> 
         
         );
     }

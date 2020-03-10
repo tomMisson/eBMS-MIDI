@@ -24,7 +24,8 @@ let gatewayConfig = {
     uri: 'http://'+process.env.GATEWAYIP+':'+process.env.GATEWAYPORT+'/',
     method: 'POST',
     "host" : process.env.GATEWAYIP,
-    'port' : process.env.GATEWAYPORT
+    "port" : process.env.GATEWAYPORT,
+    "requestInProgress": false
 }
 
 const app = express();
@@ -146,28 +147,46 @@ devices.post('/', (req,res) => {
 devices.get('/', (req,res) => {
     var reqIPhash =  hash.sha256().update(req.headers['x-forwarded-for'] || req.connection.remoteAddress).digest('hex');
     logger.info("Loading Devices");
-    postGateway('{"control":{"cmd":"getdevice"}}', reqIPhash , 'sdk.cgi', function(data, err){
-        if(!err){
-            res.send(data);
-        }
-        else{
-            res.send(500);
-        }
+    MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
+        if (err) throw err;
+        let ebmsDB = db.db("ebms");
+        
+        ebmsDB.collection("devices").find({}).toArray(function(err, result) {
+            if (err) res.send(500);
+            else res.send(result);
+        });
+        db.close();
+    
+        logger.info("Sent Devices");
+
     });
+    if (!gatewayConfig.requestInProgress) {
+        gatewayConfig.requestInProgress = true;
+        loadDevices('', reqIPhash, res);
+    }
 });
 devices.get('/:deviceID', (req,res) => {
     var id = parseInt(req.params.deviceID);
     var reqIPhash =  hash.sha256().update(req.headers['x-forwarded-for'] || req.connection.remoteAddress).digest('hex');
     logger.info("Loading Devices");
-    postGateway('{"control":{"cmd":"getdevice"}}', reqIPhash , 'sdk.cgi', function(data, err){
-        if(!err){
-            //loop through the list devices and return the object wih the UID == id
-            res.send(data);
-        }
-        else{
-            res.send(500);
-        }
+    MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
+        if (err) throw err;
+        let ebmsDB = db.db("ebms");
+        
+        ebmsDB.collection("devices").find({_id: id}).toArray(function(err, result) {
+            if (err) res.send(500);
+            else res.send(result);
+        });
+        db.close();
+    
+        logger.info("Sent Devices");
+
     });
+    if (!gatewayConfig.requestInProgress) {
+        gatewayConfig.requestInProgress = true;
+        loadDevices(id, reqIPhash, res);
+    }
+    else logger.info("gateway busy");
 });
 
 ///SCHEDULE
@@ -373,42 +392,54 @@ function initializeDatabase(callback) {
     });
 }
 
-function loadDevices() {
-    logger.info("Loading Devices");
-    postGateway('{"control":{"cmd":"getdevice"}}', "3e48ef9d22e096da6838540fb846999890462c8a32730a4f7a5eaee6945315f7" , 'sdk.cgi', function(data, err){
-        if(!err){
-            MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
-                if (err) throw err;
-                let ebmsDB = db.db("ebms");
-                let devices = JSON.parse(data);
-                devices.device.forEach(element => {
-                    
-                    let channels = '[';
-                    element.channel.forEach(channel => {
-                        channels += '{"name":"' + channel.name + '"},'
-                    });
-                    channels += ']'
-                    channels = channels.replace(",]", "]");
-
-                    let currentDevice = {'_id':element.uid, 'battery':element.battery, 'channels':JSON.parse(channels)};
-                    logger.info(JSON.stringify(currentDevice));
-                    
-                    ebmsDB.collection("devices").insertOne(currentDevice);
-
-
-                });
-
-                db.close();
+function storeDevices(devices) {
+    MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
+        if (err) throw err;
+        let ebmsDB = db.db("ebms");
+        devices = JSON.parse(devices);
+        devices.device.forEach(element => {
             
-                logger.info("Added Devices to DB");
+            let channels = '[';
+            element.channel.forEach(channel => {
+                let watt = 0
+                if (channel.meter != null) watt = channel.meter.watt/10;
 
+                channels += '{"name":"' + channel.name + '", "watt":' + watt + ', "basicValue":' + channel.basicvalue + ',"sensorValue":' + channel.sensorvalue + '},'
             });
+            channels += ']'
+            channels = channels.replace(",]", "]");
+
+            let currentDevice = {'battery':element.battery, 'channels':JSON.parse(channels)};
+            logger.info("uid = " + element.uid + ": " + JSON.stringify(currentDevice));
+            
+
+            ebmsDB.collection("devices").updateOne({_id: element.uid},{ $set : currentDevice}, { upsert: true });
+
+
+        });
+
+        db.close();
+    
+        logger.info("Added Devices to DB");
+
+    });
+}
+
+function loadDevices(id,reqIPhash,res) {
+    logger.info("Loading Devices");
+    if (id != null) id = ',"uid":'+id;
+    else id = '';
+    gatewayConfig.requestInProgress = true;
+    postGateway('{"control":{"cmd":"getdevice"' + id + '}}', reqIPhash, 'sdk.cgi', function(data, err){
+        if(!err){
+            storeDevices(data);
         }
         else{
             logger.info("Unable to get devices from Gateway");
             logger.info(err);
+            if (res != null) res.send(500);
         }
-
+        gatewayConfig.requestInProgress = false;
     });
 }
 
@@ -428,7 +459,7 @@ function verifyIdentity(reqIPhash, callback){
 }
 
 initializeDatabase(function(success, error) {
-    if (success) loadDevices();
+    if (success) loadDevices(null,"3e48ef9d22e096da6838540fb846999890462c8a32730a4f7a5eaee6945315f7",null);
     else throw error;
 });
  //Call to load the devices
