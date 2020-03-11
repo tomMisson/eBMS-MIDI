@@ -34,11 +34,11 @@ class Gateway extends Component {
         
             <div class="device gatewaySiren contain clearfix">
                 <section class="deviceLeft">
-                    <img class="largeIcon neutralIcon" src="images/deviceIcons/bullhorn.svg" ></img>
+                    <img alt="siren" class="largeIcon neutralIcon" src="images/deviceIcons/bullhorn.svg" ></img>
                 </section>
                 
                 <section class="deviceRight">
-                    <img class="largeIcon dangerIcon" src="images/generalIcons/remove.svg"></img>
+                    <img alt="remove icon" class="largeIcon dangerIcon" src="images/generalIcons/remove.svg"></img>
                 </section>
 
                 <section class="deviceBody">

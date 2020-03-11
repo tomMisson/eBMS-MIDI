@@ -99,15 +99,15 @@ class Devices extends Component {
 
     render() { 
         const rDevices = this.state.devices.map(function(device, index) {
-            if (device.name == "gatewaySiren")
+            if (device.name === "gatewaySiren")
                 return <Gateway key={device._id} deviceInfo={this.state.devices[index]}/>
             else if (device.name == "SWITCH_ALL") {
                 //return <MasterSwitch key={device.uid}/>
                 return <div key={device._id}></div>
             }
-            else if (device.name == "EnergyPlug ") 
+            else if (device.name === "EnergyPlug ") 
                 return <MeterSwitch key={device._id} deviceInfo={this.state.devices[index]}/>
-            else if (device.name == "FloodMulti-Sensor ") {
+            else if (device.name === "FloodMulti-Sensor ") {
                 //return <Gateway key={device.uid}/>
                 return <div key={device._id}></div>
             }
@@ -115,7 +115,7 @@ class Devices extends Component {
         return ( 
             <section id="devices">
                 {rDevices}
-                <button id="AddDevice"><img class="positiveIcon" src="images/generalIcons/add.svg"></img></button>
+                <button id="AddDevice"><img alt="Add devices icon" class="positiveIcon" src="images/generalIcons/add.svg"></img></button>
             </section>
         );
     }
