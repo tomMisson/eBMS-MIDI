@@ -80,7 +80,7 @@ A GET on `api/alerts` allows you to get a list of the alerts history from the DB
 
 A POST on `api/alerts` will run the rules to check conditions of devices, eg battery percentage to see if it is worth publishing an alert. 
 
-### Test mongoDB has been pre-populated
+### Test mongoDB pre-population
 
 To test this, run these commands:
 ```bash
@@ -108,7 +108,7 @@ db.apiKeys.find().pretty();
 ```
 ## Docker platform 
 
-The conainers are spun up on the Pi on boot to mimic how it would be when you plug in the gateway. We then can access the UI via localhost:80 on the pi or for any external devices, port 80 on the machines IP address.  
+The conainers are spun up on the Pi to mimic how it would be when you plug in the gateway. We then can access the UI via localhost:80 on the pi or for any external devices, port 80 on the machines IP address.  
 When we make a request, the request is first sent from the UI to the API running on the Pi which sends the correctly encoded data to the SDK for the update to occour.  
 
 ### Spinning up the docker containers
@@ -116,8 +116,6 @@ To start the project locally
 ```bash
 docker-compose up
 ```
-#### Validate sucessful start-up
-
 If all has worked, if you type
 
 ```bash
@@ -125,6 +123,10 @@ docker ps
 ```
 you should see 3 containers running: ebms-mongo, ebms-api & ebms-UI
 
-This container structure will automatically re-build if an error is encountered.
+This container structure will automatically re-build if an error is encountered.  
+  
+If you see these containers, you should be able to post to the api via localhost:3000 and access the UI on localhost:80 or wherever you may be running it on the network.
 
 ## Frontend
+
+Our frontend is written in react and is compiled each time to docker containers spin up. Data is fetched from the API and posted using the javascript fetch command. 
