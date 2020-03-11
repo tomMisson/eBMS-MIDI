@@ -3,7 +3,7 @@ version: '3'
 services:
     database:
         container_name: ebms-mongo
-        image: mongo
+        image: andresvidal/rpi3-mongodb3
         restart: always
         ports:
             - 27017:27017
