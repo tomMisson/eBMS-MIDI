@@ -370,3 +370,16 @@ input:checked + .slider:before {
     visibility: initial;
   }
 }
+
+.room{
+  background-color: #58d67a;
+  padding: 50px;
+  border-radius: 25px;
+  margin: 20px;
+}
+
+.deviceName{
+  color: #111;
+  display: inline;
+  margin-right: 10px;
+}

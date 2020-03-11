@@ -3,7 +3,7 @@ version: '3'
 services:
     database:
         container_name: ebms-mongo
-        image: andresvidal/rpi3-mongodb3
+        image: mongo
         restart: always
         ports:
             - 27017:27017
@@ -20,8 +20,8 @@ services:
             - USRNAME=admin
             - PORT=5000
             - IP=0.0.0.0
-            - GATEWAYIP=192.168.0.49
-            - GATEWAYPORT=80
+            - GATEWAYIP=86.5.168.26
+            - GATEWAYPORT=8080
         links:
             - database
             # api://api:5000
