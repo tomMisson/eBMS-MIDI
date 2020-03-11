@@ -111,6 +111,16 @@ db.apiKeys.find().pretty();
 The conainers are spun up on the Pi to mimic how it would be when you plug in the gateway. We then can access the UI via localhost:80 on the pi or for any external devices, port 80 on the machines IP address.  
 When we make a request, the request is first sent from the UI to the API running on the Pi which sends the correctly encoded data to the SDK for the update to occour.  
 
+### Environment variables
+
+We have use environment variables to make the system easily deployable, please see below a list of the variables and a brief explaination as to what they do:  
+- PSWD is the admin password for the gateway
+- USRNAME is the admin username for the gateway
+- PORT=5000 is the port internal to the docker container that the API should run on (this is later forwarded to the host device port 3000)
+- IP=0.0.0.0 is the IP it runs on on the network.
+- GATEWAYIP location of gateway on the local network
+- GATEWAYPORT the port the webserver to run on.
+
 ### Spinning up the docker containers
 To start the project locally
 ```bash
@@ -129,4 +139,4 @@ If you see these containers, you should be able to post to the api via localhost
 
 ## Frontend
 
-Our frontend is written in react and is compiled each time to docker containers spin up. Data is fetched from the API and posted using the javascript fetch command. 
+Our frontend is written in React and is compiled each time to docker containers spin up, this is then passed to Nginx which hosts the frontend for us. Data is fetched from the API and posted using the javascript fetch command and is rendered our in the DOm via React props. This system allows us to scale out the different comonents and can easily be added to. 
