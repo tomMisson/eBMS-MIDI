@@ -140,3 +140,5 @@ If you see these containers, you should be able to post to the api via localhost
 ## Frontend
 
 Our frontend is written in React and is compiled each time to docker containers spin up, this is then passed to Nginx which hosts the frontend for us. Data is fetched from the API and posted using the javascript fetch command and is rendered our in the DOm via React props. This system allows us to scale out the different comonents and can easily be added to. 
+
+There should be no real configuration needed to change the UI as the UI models data that comes from the database through the API. Therefore, all you need to configure would be the API and the Database which can be done through the docker-compose.yml file.
