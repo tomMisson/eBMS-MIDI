@@ -1,10 +1,7 @@
 import React, { Component } from 'react';
 
 class MeterSwitch extends Component {
-    state = { 
-        uid:this.props.uid,
-        wattage:0
-     }
+
      async updateDevice() {
         try {
             const response = await fetch("http://" +  window.location.hostname +":3000/api/devices/"+this.state.uid);
@@ -13,15 +10,10 @@ class MeterSwitch extends Component {
         } catch (error) {}
     }
 
-    componentDidMount() {
-        this.intervalID = setInterval(
-            () => this.updateDevice(),
-            1000
-          );
-    }
+    
 
     componentWillUnmount() {
-        clearInterval(this.intervalID);
+        
     } 
 
     render() {
@@ -29,7 +21,7 @@ class MeterSwitch extends Component {
         
             <div class="device meterSwitch">
                 <h3 class="deviceTitle inline">Meter Switch</h3>
-        <h4 id="" class="deviceStatus inline">Power Draw: {this.state.wattage} Watts</h4>
+                <h4 id="" class="deviceStatus inline">Power Draw: {this.props.deviceInfo.channels[0].watt} Watts</h4>
                 <form class="controls gatewayControls">
                     <label class="switch">
                         <input type="checkbox"/>
