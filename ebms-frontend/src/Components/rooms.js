@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 class Rooms extends Component {
     state = { rooms: [
         {"name": "demo",
-        "devices": ["test1", "test2"]
+        "devices": [{"name":"test1"}, {"name":"test2"}]
         }
     ] }
 
@@ -30,7 +30,10 @@ class Rooms extends Component {
                 this.state.rooms.map( (room) => 
                     <section>
                         <h2>{room.name}</h2>
-                        <p>{room.devices}</p>
+                        {
+                            room.devices.map((device) =>
+                            <Link to="devices">{device.name}</Link>
+                        )}   
                     </section>
                 )}
             </main>
