@@ -1,7 +1,11 @@
 import React, { Component } from 'react';
 
 class Rooms extends Component {
-    state = {  }
+    state = { rooms: [
+        {"name": "demo",
+        "devices": ["test1", "test2"]
+        }
+    ] }
 
     componentDidMount() {
         let pageLinks = document.getElementById("menuOptions").childNodes;
@@ -14,11 +18,22 @@ class Rooms extends Component {
                 link.classList.add("navLinkActive");
             }
         });
+
+
     }
 
     render() {
         return ( 
-        <h1>Rooms</h1>
+        
+            <main>
+                {
+                this.state.rooms.map( (room) => 
+                    <section>
+                        <h2>{room.name}</h2>
+                        <p>{room.devices}</p>
+                    </section>
+                )}
+            </main>
         
         );
     }

@@ -2,8 +2,6 @@ import React, { Component } from 'react';
 import { BrowserRouter, Route, Link } from "react-router-dom";
 import RegisterBox from './Components/login';
 import Devices from './Components/device';
-import Home from './Components/home';
-// import Views from './Components/views';
 import Rooms from './Components/rooms';
 import Schedule from './Components/schedule';
 import Alerts from './Components/alerts';
@@ -20,7 +18,6 @@ class App extends Component {
     toggleNavigation(e) {
       const navBar = document.getElementById("menu");
       const menuButton = document.getElementById("menuButton");
-      const navTitles = navBar.firstChild.childNodes;
       const main = document.getElementsByTagName("MAIN")[0];
       const block = document.getElementById("block");
 
@@ -59,9 +56,7 @@ class App extends Component {
             </header>
             <nav id="menu" class="closed">
                 <ul id="menuOptions">
-                  <li><Link to="/home"><img id="navHomeIcon" src="images/navIcons/home.svg" alt="Home"></img><h4>Home</h4></Link></li>
                   <li><Link to="/devices"><img id="navDevicesIcon" src="images/navIcons/devices.svg" alt="Devices"></img><h4>Devices</h4></Link></li>
-                  {/* <li><Link to="/views"><img id="navViewsIcon" src="images/navIcons/menu.svg" alt="Views"></img><h4>Views</h4></Link></li> */}
                   <li><Link to="rooms"><img id="navRoomsIcon" src="images/navIcons/room.svg" alt="Rooms"></img><h4>Groups</h4></Link></li>
                   <li><Link to="/schedule"><img id="navScheduleIcon" src="images/navIcons/event.svg" alt="Schedule"></img><h4>Schedule</h4></Link></li>
                   <li><Link to="/alerts"><img id="navAlertIcon" src="images/navIcons/warning.svg" alt="Alerts"></img><h4>Alerts</h4></Link></li>
@@ -70,10 +65,7 @@ class App extends Component {
               </nav>
             <div id="block" class="" onClick={this.toggleNavigation.bind(this)}></div>
             <main class="pad-main-2">
-              <Route exact path="/" component={Home}/>
-              <Route exact path="/home" component={Home}/>
-              <Route path="/devices" component={Devices}/>
-              {/* <Route path="/views" component={Views}/> */}
+              <Route exact path="/" component={Devices}/>
               <Route path="/rooms" component={Rooms}/>
               <Route path="/schedule" component={Schedule}/>
               <Route path="/alerts" component={Alerts}/>

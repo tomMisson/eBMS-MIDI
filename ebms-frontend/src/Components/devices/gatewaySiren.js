@@ -34,10 +34,9 @@ class Gateway extends Component {
         
             <div class="device gatewaySiren contain clearfix">
                 <section class="deviceLeft">
-                    <img class="largeIcon neutralIcon" src="images/deviceIcons/bullhorn.svg" ></img>
+                    <img alt="siren" class="largeIcon neutralIcon" src="images/deviceIcons/bullhorn.svg" ></img>
                 </section>
-                
-
+  
                 <section class="deviceBody">
                     
                 <h3 class="deviceTitle inline">Gateway {this.state.num} Siren {this.props.rand}</h3>

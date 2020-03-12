@@ -80,7 +80,7 @@ class Calendar extends Component {
         let popup = props.data.map((data) => {
             return (
                 <div key={data}>
-                    <a href="#" onClick={(e)=> {this.onSelectChange(e, data)}}>
+                    <a href="" onClick={(e)=> {this.onSelectChange(e, data)}}>
                         {data}
                     </a>
                 </div>
@@ -189,8 +189,8 @@ class Calendar extends Component {
 
         let daysInMonth = [];
         for (let d = 1; d <= this.daysInMonth(); d++) {
-            let className = (d == this.currentDay() ? "day current-day": "day");
-            let selectedClass = (d == this.state.selectedDay ? " selected-day " : "")
+            let className = (d === this.currentDay() ? "day current-day": "day");
+            let selectedClass = (d === this.state.selectedDay ? " selected-day " : "")
             daysInMonth.push(
                 <td key={d} className={className + selectedClass} >
                     <span onClick={(e)=>{this.onDayClick(e, d)}}>{d}</span>
