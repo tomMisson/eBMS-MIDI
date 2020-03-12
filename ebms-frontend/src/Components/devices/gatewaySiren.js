@@ -37,9 +37,6 @@ class Gateway extends Component {
                     <img class="largeIcon neutralIcon" src="images/deviceIcons/bullhorn.svg" ></img>
                 </section>
                 
-                <section class="deviceRight">
-                    <img class="largeIcon dangerIcon" src="images/generalIcons/remove.svg"></img>
-                </section>
 
                 <section class="deviceBody">
                     
