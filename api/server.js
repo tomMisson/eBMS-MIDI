@@ -401,10 +401,8 @@ function storeDevices(devices) {
             
             let channels = '[';
             element.channel.forEach(channel => {
-                let watt = 0
-                if (channel.meter != null) watt = channel.meter.watt/10;
 
-                channels += '{"name":"' + channel.name + '", "watt":' + watt + ', "basicValue":' + channel.basicvalue + ',"sensorValue":' + channel.sensorvalue + '},'
+                channels += '{"name":"' + channel.name + '", "basicValue":' + channel.basicvalue + ',"sensorValue":' + channel.sensorvalue + '},'
             });
             channels += ']'
             channels = channels.replace(",]", "]");

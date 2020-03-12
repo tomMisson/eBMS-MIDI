@@ -36,11 +36,7 @@ class Gateway extends Component {
                 <section class="deviceLeft">
                     <img alt="siren" class="largeIcon neutralIcon" src="images/deviceIcons/bullhorn.svg" ></img>
                 </section>
-                
-                <section class="deviceRight">
-                    <img alt="remove icon" class="largeIcon dangerIcon" src="images/generalIcons/remove.svg"></img>
-                </section>
-
+  
                 <section class="deviceBody">
                     
                 <h3 class="deviceTitle inline">Gateway {this.state.num} Siren {this.props.rand}</h3>
