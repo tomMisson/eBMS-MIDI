@@ -11,6 +11,15 @@ button {
   background-color: rgba(0, 0, 0, 0);
 }
 
+.roundButton {
+  box-shadow: 2px 2px 3px rgb(105, 105, 105);
+  cursor: pointer;
+}
+
+.roundButton:active {
+  box-shadow: 1px 1px 2px rgb(105, 105, 105);
+}
+
 body {
   top: 0px;
   width: 100%;
@@ -283,20 +292,24 @@ input:checked + .slider:before {
 
 .positiveIcon {
   background-color: limegreen;
-  border-radius: 100%;
-  height: 50px;
-  width: 50px;
 }
 
 .largeIcon {
   width: 5rem;
   height: 5rem;
-  padding: 1em;
+  padding: 0.5em;
+  border-radius: 100%;
+}
+
+.smallIcon {
+  border-radius: 100%;
+  height: 50px;
+  width: 50px;
 }
 
 .deviceRight {
   float: right;
-  height: inherit;
+  height: 100%;
 }
 
 .pr-main{padding-right: 0;}

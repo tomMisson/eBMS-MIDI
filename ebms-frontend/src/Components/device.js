@@ -33,28 +33,6 @@ class Devices extends Component {
          clearInterval(this.intervalID);
     } 
 
-    renderDevices() {
-        // const devicesSection = document.getElementById('devices');
-        // const deviceScope = this;
-        // this.setState({renderDevices:this.state.devices.map(function(device, index) {
-        //     if (device.name == "gatewaySiren")
-        //         return <Gateway key={device._id} someProp={deviceScope.state.rand}/>
-        //     else if (device.name == "SWITCH_ALL") {
-        //         //return <MasterSwitch key={device.uid}/>
-        //         return <div key={device._id}></div>
-        //     }
-        //     else if (device.name == "EnergyPlug ") 
-        //         return <MeterSwitch key={device._id} someProp={deviceScope.state.rand} deviceInfo={device}/>
-        //     else if (device.name == "FloodMulti-Sensor ") {
-        //         //return <Gateway key={device.uid}/>
-        //         return <div key={device._id}></div>
-        //     }
-        // })});
-        // //  (let index = 0; index < this.state.devices.length; index++) {
-        // //     let device = this.state.devices[index];
-            
-    }
-
     async getDevicesInfo() {
         const response = await fetch("http://" +  window.location.hostname +":3000/api/devices");
         const data = await response.json();
@@ -66,7 +44,6 @@ class Devices extends Component {
                     device.name = channel.name.replace(" ", "");
                     let deviceExists = false
                     let deviceIndex = 0;
-                    console.log(channel.watt);
                     this.state.devices.map(function(currentDevice, currentIndex) {
                         if (currentDevice._id === device._id) {
                             deviceExists = true;
@@ -96,26 +73,21 @@ class Devices extends Component {
     componentDidMount() {
         this.changeActiveNav();
     }
-
     render() { 
         const rDevices = this.state.devices.map(function(device, index) {
             if (device.name === "gatewaySiren")
                 return <Gateway key={device._id} deviceInfo={this.state.devices[index]}/>
-            else if (device.name == "SWITCH_ALL") {
-                //return <MasterSwitch key={device.uid}/>
-                return <div key={device._id}></div>
-            }
-            else if (device.name === "EnergyPlug ") 
+            else if (device.name == "SWITCH_ALL") 
+                return <MasterSwitch key={device._id} deviceInfo={this.state.devices[index]} />
+            else if (device.name == "EnergyPlug ") 
                 return <MeterSwitch key={device._id} deviceInfo={this.state.devices[index]}/>
-            else if (device.name === "FloodMulti-Sensor ") {
-                //return <Gateway key={device.uid}/>
-                return <div key={device._id}></div>
-            }
+            else if (device.name == "FloodMulti-Sensor ") 
+                return <FloodMultiSensor key={device._id} deviceInfo={this.state.devices[index]}/>
         },this);
         return ( 
             <section id="devices">
                 {rDevices}
-                <button id="AddDevice"><img alt="Add devices icon" class="positiveIcon" src="images/generalIcons/add.svg"></img></button>
+                <button id="AddDevice"><img class="largeIcon roundButton positiveIcon" src="images/generalIcons/add.svg"></img></button>
             </section>
         );
     }
