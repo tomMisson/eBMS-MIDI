@@ -34,6 +34,7 @@ body {
   visibility: hidden;
   margin: 0;
   position: fixed;
+  z-index: -1;
 }
 
 .top {top:0}
@@ -46,6 +47,7 @@ body {
 
 .pos-abs {position: absolute;}
 .pos-rel {position: relative;}
+.pos-fix {position: fixed;}
 
 
 
@@ -56,6 +58,43 @@ main {
   min-height: calc(100vh - 3.5em);
   max-height: calc(100vh - 3.5em);
   overflow: auto;
+}
+
+#addDeviceScreen {
+  background-color: #0000007c;
+  z-index: 2000;
+  align-items: center;
+  justify-content: center;
+}
+
+#AddAbortButton {
+  padding: 0.5rem 3rem;
+  border-radius: 1rem;
+  box-shadow: 2px 2px 3px rgb(0, 34, 63);
+}
+
+#AddAbortButton:active {
+  padding: 0.5rem 3rem;
+  border-radius: 1rem;
+  box-shadow: 1px 1px 2px rgb(0, 0, 0);
+  background-color: rgba(0, 47, 255, 0.596);
+}
+
+#AddSearchingBox {
+  width: 80vw;
+  height: 80vw;
+  background-color: white;
+  border-radius: 3rem;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  flex-wrap: wrap;
+  text-align: center;
+  line-height: normal;
+}
+
+#AddSearchingBox h2, #AddSearchingBox h3 {
+  min-width: 100%;
 }
 
 header  {
@@ -188,6 +227,12 @@ nav li:active {
 }
 
 #AddDevice {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+}
+
+#AddRoom {
   position: fixed;
   bottom: 1rem;
   right: 1rem;
