@@ -44,6 +44,7 @@ var devices = express();
 var schedule = express();
 var alerts = express();
 var net = express();
+var control = express();
 
 app.use('/auth', auth);
 app.use('/api', api);
@@ -52,6 +53,7 @@ api.use('/devices', devices);
 api.use('/alerts', alerts);
 api.use('/rooms', rooms);
 app.use('/network', net);
+api.use('/control', control)
 
 ///
 /// APP
@@ -91,7 +93,7 @@ auth.post('/', (req, res) => {
     console.log(data);
     var reqIPhash =  hash.sha256().update(req.headers['x-forwarded-for'] || req.connection.remoteAddress).digest('hex');
     //If they exist in the DB then just 200
-    if(verifyIdentity(reqIPhash)){//MAY CAUSE ISSUES LATER WHEN USER CONNECTS TO WEB UI UN-AUTHED
+    if(verifyIdentity(reqIPhash, function(auth, err) {})){//MAY CAUSE ISSUES LATER WHEN USER CONNECTS TO WEB UI UN-AUTHED
         res.send(200);
     }
     else
@@ -140,6 +142,24 @@ api.post('/', (req,res) => {
     });
 });
 
+///
+control.get('/:deviceID/:command/:val', (req,res) => {
+    const uid = req.params.deviceID;
+    const cmd = req.params.command;
+    const val = req.params.val;
+    var reqIPhash =  hash.sha256().update(req.headers['x-forwarded-for'] || req.connection.remoteAddress).digest('hex');
+    postGateway('{"control":{"cmd":"' + cmd + '","uid":' + uid + ',"val":' + val +'}}', reqIPhash, 'sdk.cgi', function(data, err){
+        if(!err){
+            res.send("Command Sent");
+        }
+        else{
+            logger.info("Unable to Send Command");
+            logger.info(err);
+            res.send(err);
+        }
+    });
+});
+
 ///DEVICES
 devices.post('/', (req,res) => {
    //TBC
@@ -147,23 +167,40 @@ devices.post('/', (req,res) => {
 devices.get('/', (req,res) => {
     var reqIPhash =  hash.sha256().update(req.headers['x-forwarded-for'] || req.connection.remoteAddress).digest('hex');
     logger.info("Loading Devices");
-    MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
-        if (err) throw err;
-        let ebmsDB = db.db("ebms");
-        
-        ebmsDB.collection("devices").find({}).toArray(function(err, result) {
-            if (err) res.send(500);
-            else res.send(result);
-        });
-        db.close();
-    
-        logger.info("Sent Devices");
-
+    postGateway('{"control":{"cmd":"getdevice"}}', reqIPhash, 'sdk.cgi', function(data, err){
+        if(!err){
+            const devices = parseDevices(data);
+            res.send(devices);
+            logger.info("Sent Devices");
+            updateStoredDevices(devices);
+        }
+        else{
+            logger.info("Unable to Send Command");
+            logger.info(err);
+            verifyIdentity(reqIPhash, function(authorised, error) {
+                if (error) res.send(error);
+                else if (authorised) {
+                    MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
+                        if (err) res.send(500);
+                        let ebmsDB = db.db("ebms");
+                            
+                        ebmsDB.collection("devices").find({}).toArray(function(err, result) {
+                            if (err) res.send(500);
+                                else res.send(result);
+                        });
+                        db.close();
+                        logger.info("Sent Stored Devices");
+                    
+                    });
+                    logger.info("Authorised");
+                }
+                else {
+                    logger.info("Invalid credentials");
+                    res.send(401);
+                };
+            });
+        }
     });
-    if (!gatewayConfig.requestInProgress) {
-        gatewayConfig.requestInProgress = true;
-        loadDevices('', reqIPhash, res);
-    }
 });
 devices.get('/:deviceID', (req,res) => {
     var id = parseInt(req.params.deviceID);
@@ -205,7 +242,7 @@ schedule.post('/', (req,res) => {
         "devices":devices
     }
 
-    if(verifyIdentity(reqIPhash)){
+    if(verifyIdentity(reqIPhash, function(auth, err) {})){
         MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
             if (err) throw err;
             var ebmsDB = db.db("ebms");
@@ -224,7 +261,7 @@ schedule.post('/', (req,res) => {
 });
 schedule.get('/', (req,res) => {
     var reqIPhash =  hash.sha256().update(req.headers['x-forwarded-for'] || req.connection.remoteAddress).digest('hex');
-    if(verifyIdentity(reqIPhash)){
+    if(verifyIdentity(reqIPhash, function(auth, err) {})){
         MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
             if (err) throw err;
             var ebmsDB = db.db("ebms");
@@ -280,7 +317,7 @@ rooms.post('/', (req,res) => {
 });
 rooms.get('/', (req,res) => {
     var reqIPhash =  hash.sha256().update(req.headers['x-forwarded-for'] || req.connection.remoteAddress).digest('hex');
-    if(verifyIdentity(reqIPhash)){
+    if(verifyIdentity(reqIPhash, function(auth, err) {})){
         MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
             if (err) throw err;
             var ebmsDB = db.db("ebms");
@@ -300,7 +337,7 @@ rooms.get('/', (req,res) => {
 rooms.get('/:roomName', (req, res)=> {
     var reqIPhash =  hash.sha256().update(req.headers['x-forwarded-for'] || req.connection.remoteAddress).digest('hex');
     var room = req.params.roomName;
-    if(verifyIdentity(reqIPhash)){
+    if(verifyIdentity(reqIPhash, function(auth, err) {})){
         MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
             if (err) throw err;
             var ebmsDB = db.db("ebms");
@@ -366,7 +403,10 @@ function postGateway(postData, hashedIP, page, callback){
             });
             logger.info("Authorised");
         }
-        else logger.info("Invalid credentials");
+        else {
+            logger.info("Invalid credentials");
+            return callback(null, 401);
+        };
     });
 }
 ///
@@ -392,52 +432,67 @@ function initializeDatabase(callback) {
     });
 }
 
-function storeDevices(devices) {
+function parseDevices(devices) {
+    let parsedDevices = [];
+    devices = JSON.parse(devices);
+    devices.device.forEach(element => {
+        let channels = '[';
+        element.channel.forEach(channel => {
+            channels += '{"name":"' + channel.name + '", "basicValue":' + channel.basicvalue + ',"sensorValue":' + channel.sensorvalue + '},'
+        });
+        channels += ']'
+        channels = channels.replace(",]", "]");
+
+        let currentDevice = {'_id': element.uid, 'battery':element.battery, 'channels':JSON.parse(channels)};
+        parsedDevices.push(currentDevice);
+    });
+    return parsedDevices;
+}
+
+function updateStoredDevices(devices) {
     MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
         if (err) throw err;
         let ebmsDB = db.db("ebms");
-        devices = JSON.parse(devices);
-        devices.device.forEach(element => {
-            
-            let channels = '[';
-            element.channel.forEach(channel => {
-
-                channels += '{"name":"' + channel.name + '", "basicValue":' + channel.basicvalue + ',"sensorValue":' + channel.sensorvalue + '},'
-            });
-            channels += ']'
-            channels = channels.replace(",]", "]");
-
-            let currentDevice = {'battery':element.battery, 'channels':JSON.parse(channels)};
-            logger.info("uid = " + element.uid + ": " + JSON.stringify(currentDevice));
-            
-
-            ebmsDB.collection("devices").updateOne({_id: element.uid},{ $set : currentDevice}, { upsert: true });
-
-
+        let deviceIDs = [];
+        devices.forEach(device => {
+            deviceIDs.push(device._id);
+            ebmsDB.collection("devices").updateOne({_id: device._id},{ $set : device}, { upsert: true });
         });
 
-        db.close();
+        ebmsDB.collection("devices").find({}).toArray(function(err, result) {
+            try {
+                if (err) throw err;
+                else {
+                    result.forEach(element => {
+                        if(!deviceIDs.includes(element._id)) {
+                            ebmsDB.collection("devices").deleteOne({_id: element._id}); 
+                            logger.info("Deleted removed device");
+                        }
+                    });
+                }
+            }
+            catch (err) {throw err;}
+            finally {
+            db.close();
+            }
+        });
     
-        logger.info("Added Devices to DB");
+        logger.info("Devices Updated");
 
     });
 }
 
-function loadDevices(id,reqIPhash,res) {
+function loadDevices(reqIPhash,callback) {
     logger.info("Loading Devices");
-    if (id != null) id = ',"uid":'+id;
-    else id = '';
-    gatewayConfig.requestInProgress = true;
-    postGateway('{"control":{"cmd":"getdevice"' + id + '}}', reqIPhash, 'sdk.cgi', function(data, err){
+    postGateway('{"control":{"cmd":"getdevice"}}', reqIPhash, 'sdk.cgi', function(data, err){
         if(!err){
-            storeDevices(data);
+            updateStoredDevices(parseDevices(data));
         }
         else{
             logger.info("Unable to get devices from Gateway");
             logger.info(err);
             if (res != null) res.send(500);
         }
-        gatewayConfig.requestInProgress = false;
     });
 }
 
@@ -449,7 +504,7 @@ function verifyIdentity(reqIPhash, callback){
         if (err) throw err;
         var dbo = db.db("ebms");
         dbo.collection("apiKeys").findOne({"token":reqIPhash}, function(err, item) {
-            if (err) return callback(false, err);
+            if (err || (item === null)) return callback(false, err);
             else return callback(true, null);
         });    
         db.close();
@@ -457,7 +512,7 @@ function verifyIdentity(reqIPhash, callback){
 }
 
 initializeDatabase(function(success, error) {
-    if (success) loadDevices(null,"3e48ef9d22e096da6838540fb846999890462c8a32730a4f7a5eaee6945315f7",null);
+    if (success) loadDevices("3e48ef9d22e096da6838540fb846999890462c8a32730a4f7a5eaee6945315f7",function(error, data){});
     else throw error;
 });
  //Call to load the devices
