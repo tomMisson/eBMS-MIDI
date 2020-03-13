@@ -9,38 +9,23 @@ class Gateway extends Component {
     toggleSiren() {
 
     }
-
-    componentDidMount() {
-        if (this.props.rand != null) {
-            this.prepareRender();
-        }
-    }
     
     componentWillUpdate(nextProps, nextState) {
         if (nextProps.rand !== this.props.rand) {
             this.prepareRender();
         }
     }
-    
-    prepareRender() {
-        //simplified
-        this.setState({
-            num:this.props.rand
-        });
-    }
 
     render() {
         return ( 
-        
-            <div class="device gatewaySiren contain clearfix">
-                <section class="deviceLeft">
-                    <img alt="siren" class="largeIcon neutralIcon" src="images/deviceIcons/bullhorn.svg" ></img>
+
+            <div class="device contain clearfix" id={this.props.deviceInfo._id}>
+                <section class="deviceHeader dis-flx">
+                    <img alt="siren" class="smallIcon neutralIcon" src="images/deviceIcons/bullhorn.svg" ></img>
+                    <h3 class="deviceTitle">Gateway Siren</h3>
                 </section>
-  
-                <section class="deviceBody">
-                    
-                <h3 class="deviceTitle inline">Gateway {this.state.num} Siren {this.props.rand}</h3>
-                    <div id="gatewaySiren_Controls">
+                <section class="deviceContent">
+                <div id="gatewaySiren_Controls">
                         <select id='sirenSound' name='gatewaySiren'>
                             <option value='1'>Siren: 1</option>
                             <option value='2'>Siren: 2</option>
@@ -51,14 +36,16 @@ class Gateway extends Component {
                             <option value='7'>Siren: 7</option>
                         </select>
                         
-                    <label class="switch">
-                        <input type="checkbox"/>
-                        <span class="slider round"></span>
-                    </label>
+                    <div class="controls">
+                        <button class="powerOn power">On</button>
+                        <div class="vl"></div>
+                        <button class="powerOff power">Off</button>
                     </div>
-                    <div id="gatewaySiren_Status">
-                        <h4 class="deviceStatus inline">Status: </h4>
                     </div>
+                </section>
+                <section class="deviceFooter dis-flx">
+                    <h5>Status: ...</h5>
+                    <div></div>
                 </section>
             </div>
         

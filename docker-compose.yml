@@ -24,7 +24,7 @@ services:
             - GATEWAYPORT=80
         links:
             - database
-            # api://api:5000
+            # api://ebms-api:5000
 
     website:
         container_name: ebms-UI
