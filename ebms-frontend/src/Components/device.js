@@ -7,7 +7,8 @@ import update from 'immutability-helper';
 
 class Devices extends Component {
     state = { 
-        devices:[{_id:0, name:"gatewaySiren"}]
+        devices:[{_id:0, name:"gatewaySiren"}],
+        addingDevice:false
     }
 
     changeActiveNav() {
@@ -36,8 +37,31 @@ class Devices extends Component {
 
     addDevice () {
         fetch("http://" +  window.location.hostname +":3000/api/control/256/zwnosecure/1")
-        .then(response => fetch("http://" +  window.location.hostname +":3000/api/control/256/include/1"))
+        .then(response => fetch("http://" +  window.location.hostname +":3000/api/control/256/include/1")
+            .then(response2 =>
+                this.showAddDevice()
+            )
+            .catch()
+        )
         .catch()
+    }
+
+    showAddDevice() {
+        this.setState({addingDevice:true});
+        document.getElementById("addDeviceScreen").classList.remove("invisible")
+    }
+
+    cancelAddDevice() {
+        fetch("http://" +  window.location.hostname +":3000/api/control/256/abort/1")
+        .then(
+            this.hideAddDevice()
+        )
+        .catch()
+    }
+
+    hideAddDevice() {
+        document.getElementById("addDeviceScreen").classList.add("invisible");
+        this.setState({addingDevice:false});
     }
 
     async getDevicesInfo() {
@@ -78,6 +102,7 @@ class Devices extends Component {
         );
 
         this.changeActiveNav();
+        this.cancelAddDevice();
     }
 
     getDeviceComponent(device, index) {
@@ -97,7 +122,14 @@ class Devices extends Component {
         return ( 
             <section id="devices">
                 {rDevices}
-                <button id="AddDevice" onClick={this.addDevice}><img class="largeIcon roundButton positiveIcon" src="images/generalIcons/add.svg"></img></button>
+                <div id="addDeviceScreen" class="pos-fix right left top bottom dis-flx">
+                    <section id="AddSearchingBox" class="">
+                        <h2>Searching...</h2>
+                        <h3>60 Seconds Remaining</h3>
+                        <button id="AddAbortButton" onClick={this.cancelAddDevice.bind(this)}><b>Cancle</b></button>
+                    </section>
+                </div>
+                <button id="AddDevice" onClick={this.addDevice.bind(this)}><img class="largeIcon roundButton positiveIcon" src="images/generalIcons/add.svg"></img></button>
             </section>
         );
     }
