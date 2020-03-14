@@ -243,6 +243,7 @@ nav li:active {
 
 #menu h4 {
   display: inline;
+  font-size: large;
 }
 
 .closed {

@@ -4,9 +4,12 @@
   "private": true,
   "dependencies": {
     "@iconify/react": "^1.1.1",
+    "bootstrap": "^4.4.1",
     "immutability-helper": "^3.0.1",
+    "jquery": "^3.4.1",
     "moment": "^2.24.0",
     "react": "^16.11.0",
+    "react-bootstrap": "^1.0.0-beta.17",
     "react-dom": "^16.11.0",
     "react-router-dom": "^5.1.2",
     "react-scripts": "^3.3.0"

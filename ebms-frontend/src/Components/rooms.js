@@ -1,10 +1,14 @@
 import React, { Component } from 'react';
 import { Link } from "react-router-dom";
 import update from 'immutability-helper';
+import load from './loading.gif';
+import {Modal,Button} from 'react-bootstrap';
+import $ from "jquery";
 
 class Rooms extends Component {
     state = { 
-        rooms:[]
+        rooms:[],
+        devices:[],
     }
 
     changeActiveNav() {
@@ -37,7 +41,7 @@ class Rooms extends Component {
                 const device = room.devices[index];
                 const devResponse = await fetch("http://" +  window.location.hostname +":3000/api/devices/" + device.devID);
                 const devData = await devResponse.json();
-                room.devices[index].name = await devData[0].channels[0].name
+                if(devData.length>0){room.devices[index].name = devData[index].channels[index].name}
             }
 
             let roomExists = false;
@@ -59,6 +63,12 @@ class Rooms extends Component {
         }
     }
 
+    async getDevices()
+    {
+        const devResponse = await fetch("http://" +  window.location.hostname +":3000/api/devices/");
+        await devResponse.json().then((data) => this.setState({devices:data}))
+    }
+
     componentDidMount() {
         this.intervalID = setInterval(
             () => this.getRoomsInfo(),
@@ -75,7 +85,6 @@ class Rooms extends Component {
             );
         }, this);
     }
-
 
     render() { 
         const rRooms = this.state.rooms.map(function(room, index) { 
@@ -103,14 +112,96 @@ class Rooms extends Component {
             )
          }, this);
         
-        return ( 
-            <section id="devices">
-                {rRooms}
-                
-                <button id="AddRoom" onClick=""><img class="largeIcon roundButton positiveIcon" src="images/generalIcons/add.svg"></img></button>
-            </section>
-        );
+        if(rRooms.length != 0)
+        {
+            this.getDevices()
+            return ( 
+                <section id="devices">
+                    {rRooms}
+                    <button id="AddRoom"><AddRoom devicesData={this.state.devices} rooms={this.state.rooms}/></button>
+                </section>
+            )
+        }
+        else{
+            return(
+                <section>
+                    <img alt="loading" src={load}></img>
+                </section>
+            )
+        }
     }
 }
  
 export default Rooms;
+
+class AddRoom extends React.Component {
+    constructor(props, context) {
+      super(props, context);
+  
+      this.handleShow = this.handleShow.bind(this);
+      this.handleClose = this.handleClose.bind(this);
+  
+      this.state = {
+        show: false,
+       
+      };
+    }
+  
+    handleClose() {
+      this.setState({ show: false });
+    }
+  
+    handleShow() {
+      this.setState({ show: true });
+    }
+
+    async devicesList(){
+        let response = await fetch("http://" +  window.location.hostname +":3000/api/devices");
+        let data = await response.json();
+        console.log(data);
+        return data;
+    }
+
+    saveRoom(){
+        
+    }
+  
+    render() {
+  
+      return (
+        <div>
+  
+          <Button style={{backgroundColor:"#fff", border:"none", outline:"none"}} onClick={this.handleShow}>
+          <img class="largeIcon roundButton positiveIcon" src="images/generalIcons/add.svg"></img>
+          </Button>
+  
+          <Modal show={this.state.show} onHide={this.handleClose}>
+            <Modal.Header closeButton>
+              <Modal.Title>Add new room</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <form>
+                <label for="exampleInputEmail1">Room name</label>
+                <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Name"/>
+                <small id="emailHelp" class="form-text text-muted">Group your devices under one name</small>
+                <br/>
+                <div>
+                {
+                    this.props.devicesData.map((device) =>
+                        <div key={device._id}>
+                            <input name={device._id} type="checkbox"/>
+                            <label for={device._id}>{device.channels[0].name}</label>
+                        </div>
+                    )
+                }
+                </div>
+              </form>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button onClick={this.saveRoom()}>Add</Button>
+            </Modal.Footer>
+          </Modal>
+        </div>
+      );
+    }
+  }
