@@ -7,6 +7,26 @@
   transition: width 0.3s, height 0.3s, padding 0.3s, background-color 0.3s;
 }
 
+hr {
+  margin: 0 0.25rem;
+  border: 1px solid rgb(175, 175, 175);
+  border-radius: 50%;
+  background-color: rgb(175, 175, 175);
+}
+
+#sirenSound {
+  padding: 0.5rem 5.9rem;
+  width: 16rem;
+  text-align: center;
+  cursor: pointer;
+  border-radius: 1rem 1rem 0 0;
+  text-align: center;
+}
+
+#sirenSound:active {
+  background-color: rgba(0, 47, 255, 0.596);
+}
+
 button {
   background-color: rgba(0, 0, 0, 0);
 }
@@ -60,27 +80,27 @@ main {
   overflow: auto;
 }
 
-#addDeviceScreen {
+#addRemoveDeviceScreen {
   background-color: #0000007c;
   z-index: 2000;
   align-items: center;
   justify-content: center;
 }
 
-#AddAbortButton {
+#addRemoveAbortButton {
   padding: 0.5rem 3rem;
   border-radius: 1rem;
   box-shadow: 2px 2px 3px rgb(0, 34, 63);
 }
 
-#AddAbortButton:active {
+#addRemoveAbortButton:active {
   padding: 0.5rem 3rem;
   border-radius: 1rem;
   box-shadow: 1px 1px 2px rgb(0, 0, 0);
   background-color: rgba(0, 47, 255, 0.596);
 }
 
-#AddSearchingBox {
+#addRemoveSearchingBox {
   width: 80vw;
   height: 80vw;
   background-color: white;
@@ -93,7 +113,7 @@ main {
   line-height: normal;
 }
 
-#AddSearchingBox h2, #AddSearchingBox h3 {
+#addRemoveSearchingBox h2, #addRemoveSearchingBox h3 {
   min-width: 100%;
 }
 
@@ -294,6 +314,14 @@ nav li:active {
   border-radius: 0 1rem 1rem 0;
 }
 
+[id="0"] .powerOn {
+  border-radius: 0 0 0 1rem;
+}
+
+[id="0"] .powerOff {
+  border-radius: 0 0 1rem 0;
+}
+
 .powerOn:active {
   background-color: #00ff0055;
 }
@@ -400,6 +428,11 @@ nav li:active {
     background-color: #60606027;
     position: fixed;
   }
+
+  #addRemoveSearchingBox {
+    width: 18rem;
+    height: 18rem;
+  }
 }
 
 /* Large devices (desktops, 992px and up) */
@@ -417,6 +450,11 @@ nav li:active {
 
   .expanded h4 {
     display: inline;
+  }
+
+  #addRemoveSearchingBox {
+    width: 19rem;
+    height: 19rem;
   }
 }
 
@@ -440,5 +478,10 @@ nav li:active {
   .closed {
     width: 4.5em;
     visibility: initial;
+  }
+
+  #addRemoveSearchingBox {
+    width: 20rem;
+    height: 20rem;
   }
 }
