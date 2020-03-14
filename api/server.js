@@ -173,6 +173,7 @@ devices.get('/', (req,res) => {
             res.send(devices);
             logger.info("Sent Devices");
             updateStoredDevices(devices);
+            updateAlerts(data);
         }
         else{
             logger.info("Unable to Send Command");
@@ -524,11 +525,54 @@ function loadDevices(reqIPhash,callback) {
     postGateway('json','{"control":{"cmd":"getdevice"}}', reqIPhash, 'sdk.cgi', function(data, err){
         if(!err){
             updateStoredDevices(parseDevices(data));
+            updateAlerts(data);
         }
         else{
             logger.info("Unable to get devices from Gateway");
             logger.info(err);
         }
+    });
+}
+
+function updateAlerts(devices) {
+    let parsedAlerts = [];
+    devices = JSON.parse(devices);
+    devices.device.forEach(element => {
+        if (element.lasttampertime != 0) {
+            let currentDeviceAlert = {'_id': element.uid, 'lastTamperTime':element.lasttampertime, 'name':element.channel[0].name};
+            parsedAlerts.push(currentDeviceAlert);
+        }
+    });
+    MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
+        if (err) throw err;
+        let ebmsDB = db.db("ebms");
+        let deviceIDs = [];
+        parsedAlerts.forEach(device => {
+            ebmsDB.collection("alerts").updateOne({_id: device._id},{ $set : {name:device.name}, $push : {tamperTimes:device.lastTamperTime}}, { upsert: true });
+            db.close();
+            // ebmsDB.collection("alerts").find({_id: device._id}).toArray(function(err, result) {
+            //     try {
+            //         if (err) throw err;
+            //         else {
+            //             if (result.length == 0) {
+            //                 ebmsDB.collection("alerts").insertOne({_id:device._id, name:device.name, tamperTimes:[device.lastTamperTime]});
+            //             }
+            //             else {
+            //                 result.forEach(element => {
+            //                         ebmsDB.collection("alerts").updateOne({_id: device._id},{ $set : {name:device.name, $push: {tamperTimes:device.lastTamperTime}}}, { upsert: true });
+            //                 });
+            //             }
+            //         }
+            //     }
+            //     catch (err) {throw err;}
+            //     finally {
+            //         db.close();
+            //     }
+            // });
+        });
+    
+        logger.info("Alerts Updated");
+
     });
 }
 
@@ -618,3 +662,8 @@ initializeDatabase(function(success, error) {
     else throw error;
 });
  //Call to load the devices
+
+setInterval( () => 
+    loadDevices("3e48ef9d22e096da6838540fb846999890462c8a32730a4f7a5eaee6945315f7", function(error, data){}),
+    300000
+);// Update Devices / alerts every 10 min
