@@ -452,11 +452,8 @@ function initializeDatabase(callback) {
     MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
         if (err) return callback(null, err);
         let ebmsDB = db.db("ebms");
-        
-        // ebmsDB.createCollection("devices");
-        // ebmsDB.createCollection("rooms");
+
         // ebmsDB.createCollection("schedule");
-        // ebmsDB.createCollection("alerts");
         ebmsDB.collection("apiKeys").insertOne({"token":"3e48ef9d22e096da6838540fb846999890462c8a32730a4f7a5eaee6945315f7"}, function(err, result) {
             if (err) return callback(false, err);
             logger.info("Added localhost token to DB");
@@ -550,25 +547,6 @@ function updateAlerts(devices) {
         parsedAlerts.forEach(device => {
             ebmsDB.collection("alerts").updateOne({_id: device._id},{ $set : {name:device.name}, $push : {tamperTimes:device.lastTamperTime}}, { upsert: true });
             db.close();
-            // ebmsDB.collection("alerts").find({_id: device._id}).toArray(function(err, result) {
-            //     try {
-            //         if (err) throw err;
-            //         else {
-            //             if (result.length == 0) {
-            //                 ebmsDB.collection("alerts").insertOne({_id:device._id, name:device.name, tamperTimes:[device.lastTamperTime]});
-            //             }
-            //             else {
-            //                 result.forEach(element => {
-            //                         ebmsDB.collection("alerts").updateOne({_id: device._id},{ $set : {name:device.name, $push: {tamperTimes:device.lastTamperTime}}}, { upsert: true });
-            //                 });
-            //             }
-            //         }
-            //     }
-            //     catch (err) {throw err;}
-            //     finally {
-            //         db.close();
-            //     }
-            // });
         });
     
         logger.info("Alerts Updated");
