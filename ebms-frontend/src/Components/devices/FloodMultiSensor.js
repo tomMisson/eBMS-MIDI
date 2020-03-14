@@ -1,11 +1,19 @@
 import React, { Component } from 'react';
+import Parent from '../device.js';
 
 class FloodMultiSensor extends Component {
-
     state = {
         temperature: '',
         humidity: '',
         flood: ''
+    }
+
+    componentWillUnmount() {
+        console.log("flood be gone");
+    }
+
+    removeClick = () => {
+        this.props.removeFunction();
     }
 
     render() {
@@ -38,7 +46,7 @@ class FloodMultiSensor extends Component {
                 </section>
                 <section class="deviceFooter dis-flx">
                     <h5>Last Updated: ...</h5>
-                    <img class="smallIcon roundButton dangerIcon" src="images/generalIcons/remove.svg"></img>
+                    <img class="smallIcon roundButton dangerIcon" onClick={this.removeClick} src="images/generalIcons/remove.svg"></img>
                 </section>
             </div>
         
