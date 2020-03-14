@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
+import update from 'immutability-helper';
 
 class Rooms extends Component {
-    state = { rooms: [
-        {"name": "demo",
-        "devices": [{"name":"test1"}, {"name":"test2"}]
-        }
-    ] }
+    state = { 
+        rooms:[]
+    }
 
     changeActiveNav() {
         let pageLinks = document.getElementById("menuOptions").childNodes;
@@ -66,18 +65,6 @@ class Rooms extends Component {
             1000
         );
         
-            <main>
-                {
-                this.state.rooms.map( (room) => 
-                    <section key={room.id} className="room">
-                        <h2>{room.name}</h2>
-                        {
-                            room.devices.map((device) =>
-                            <Link to="devices">{device.name}</Link>
-                        )}   
-                    </section>
-                )}
-            </main>
         this.changeActiveNav();
     }
 
@@ -115,6 +102,7 @@ class Rooms extends Component {
             </div>
             )
          }, this);
+        
         return ( 
             <section id="devices">
                 {rRooms}
