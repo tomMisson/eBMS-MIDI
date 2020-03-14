@@ -4,7 +4,7 @@
   border: 0;
   font-family: "Roboto",Sans-serif;
   box-sizing: border-box;
-  transition: width 0.3s, height 0.3s, padding 0.3s, background-color 0.3s;
+  transition: width 0.3s, height 0.3s, padding 0.3s, background-color 0.3s, transform 0.3s;
 }
 
 hr {
@@ -78,6 +78,10 @@ main {
   min-height: calc(100vh - 3.5em);
   max-height: calc(100vh - 3.5em);
   overflow: auto;
+}
+
+#title {
+  visibility: hidden;
 }
 
 #addRemoveDeviceScreen {
@@ -233,17 +237,24 @@ nav li:active {
   float: left;
   min-height: calc(100vh - 3.5em);
   max-height: calc(100vh - 3.5em);
-  
   z-index: 1000;
+  width: 15em;
 }
 
-.expanded {
-  width: 100%;
+#menu h4 {
+  display: inline;
 }
 
 .closed {
-  width: 0;
-  visibility: hidden;
+  transform: translate(-15em, 0);
+}
+
+.block {
+  width: 100vw;
+  height: calc(100vh - 3.5em);
+  z-index: 750;
+  background-color: #60606027;
+  position: fixed;
 }
 
 #AddDevice {
@@ -409,9 +420,13 @@ nav li:active {
 }
 
 /* Medium devices (tablets, 768px and up) */
-@media (min-width: 768px) and (max-width: 991px) {
+@media (min-width: 768px) {
   .pad-main-2{padding: 0;}
   .pad-main-1{padding: 0;}
+
+  #title {
+    visibility: visible;
+  }
 
   .expanded {
     width: 15em;
@@ -421,13 +436,7 @@ nav li:active {
     display: inline;
   }
 
-  .block {
-    width: 100vw;
-    height: calc(100vh - 3.5em);
-    z-index: 750;
-    background-color: #60606027;
-    position: fixed;
-  }
+  
 
   #addRemoveSearchingBox {
     width: 18rem;
@@ -440,29 +449,15 @@ nav li:active {
   .pad-main-2{padding: 0 calc(100% / 15);}
   .pad-main-1{padding: 0;}
 
-  #menu {
-    position: initial;
+  .block {
+    width: 0;
+    height: 0;
+    z-index: -1;
+    background-color: #60606000;
+    position: fixed;
+    visibility: hidden;
   }
 
-  .expanded {
-    width: 15em;
-  }
-
-  .expanded h4 {
-    display: inline;
-  }
-
-  #addRemoveSearchingBox {
-    width: 19rem;
-    height: 19rem;
-  }
-}
-
-/* Extra large devices (large desktops, 1200px and up) */
-@media (min-width: 1200px) {
-  .pad-main-2{padding: 0 calc(100% / 9);}
-  .pad-main-1{padding: 0 calc(100% / 18);}
-  
   #menu {
     position: initial;
   }
@@ -476,8 +471,42 @@ nav li:active {
   }
 
   .closed {
-    width: 4.5em;
+    width:0 !important;
+    position: fixed;
+  }
+
+  #addRemoveSearchingBox {
+    width: 19rem;
+    height: 19rem;
+  }
+}
+
+/* Extra large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px) {
+  .pad-main-2{padding: 0 calc(100% / 9);}
+  .pad-main-1{padding: 0 calc(100% / 18);}
+
+  .expanded {
+    width: 15em !important;
+  }
+
+  .expanded h4 {
+    display: inline;
+  }
+
+  .closed {
+    transform: unset;
+    width: 4.5em !important;
     visibility: initial;
+  }
+
+  .closed h4 {
+    display:block !important;
+  }
+
+  #menu {
+    position: initial;
+    width: 4.5em;
   }
 
   #addRemoveSearchingBox {
