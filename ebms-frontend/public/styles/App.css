@@ -4,7 +4,25 @@
   border: 0;
   font-family: "Roboto",Sans-serif;
   box-sizing: border-box;
-  transition: width 0.3s, height 0.3s, padding 0.3s, background-color 0.3s, transform 0.3s;
+  transition: width 0.3s, height 0.3s, padding 0.3s, background-color 0.3s ease, transform 0.3s;
+}
+
+.scheduleTable {
+  border-spacing: 0;
+  box-shadow: 1px 1px 2px #888888;
+  color: #727272;
+  margin: 0.5rem 1rem;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  box-shadow: 1px 1px 2px #888888;
+  background-color: white;
+  width: 100%;
+}
+
+#daysOfWeekHeaders th {
+  -webkit-writing-mode: vertical-rl;
+  -ms-writing-mode: tb-rl;
+  writing-mode: vertical-rl;  
 }
 
 hr {
@@ -84,7 +102,7 @@ main {
   visibility: hidden;
 }
 
-#addRemoveDeviceScreen {
+#addRemoveDeviceScreen, #addEventScreen {
   background-color: #0000007c;
   z-index: 2000;
   align-items: center;
@@ -104,7 +122,7 @@ main {
   background-color: rgba(0, 47, 255, 0.596);
 }
 
-#addRemoveSearchingBox {
+#addRemoveSearchingBox, #addEventBox {
   width: 80vw;
   height: 80vw;
   background-color: white;
@@ -121,6 +139,10 @@ main {
   min-width: 100%;
 }
 
+#addEventBox h2, #addEventBox h3 {
+  min-width: 100%;
+}
+
 header  {
   top: 0;
   background-color: white;
@@ -129,6 +151,7 @@ header  {
   line-height: 3.5em;
   vertical-align: middle;
   color: #61116a;
+  box-shadow: 1px 1px 2px #888888;
 }
 
 #headerLeft {
@@ -239,6 +262,7 @@ nav li:active {
   max-height: calc(100vh - 3.5em);
   z-index: 1000;
   width: 15em;
+  box-shadow: 1px 1px 2px #888888;  
 }
 
 #menu h4 {
@@ -257,13 +281,7 @@ nav li:active {
   position: fixed;
 }
 
-#AddDevice {
-  position: fixed;
-  bottom: 1rem;
-  right: 1rem;
-}
-
-#AddRoom {
+#AddDevice, #AddRoom, #AddEvent  {
   position: fixed;
   bottom: 1rem;
   right: 1rem;
@@ -317,19 +335,34 @@ nav li:active {
   cursor: pointer;
 }
 
-.powerOn {
+.powerOn, .powerOnLabel {
   border-radius: 1rem 0 0 1rem;
+  display: inline-block;
 }
 
-.powerOff {
+.powerOff, .powerOffLabel {
   border-radius: 0 1rem 1rem 0;
+  display: inline-block;
 }
 
-[id="0"] .powerOn {
+.powerOnRadio, .powerOffRadio {
+  position: fixed;
+  z-index: -1;
+}
+
+.powerOnRadio:checked ~ .powerOnLabel {
+  background-color: #00ff0055
+}
+
+.powerOffRadio:checked ~ .powerOffLabel {
+  background-color: #ff000055;
+}
+
+[id="0"] .powerOn, .siren .powerOnLabel {
   border-radius: 0 0 0 1rem;
 }
 
-[id="0"] .powerOff {
+[id="0"] .powerOff, .siren .powerOffLabel {
   border-radius: 0 0 1rem 0;
 }
 
@@ -438,7 +471,7 @@ nav li:active {
 
   
 
-  #addRemoveSearchingBox {
+  #addRemoveSearchingBox, #addEventBox {
     width: 18rem;
     height: 18rem;
   }
@@ -475,7 +508,7 @@ nav li:active {
     position: fixed;
   }
 
-  #addRemoveSearchingBox {
+  #addRemoveSearchingBox, #addEventBox{
     width: 19rem;
     height: 19rem;
   }
@@ -509,7 +542,7 @@ nav li:active {
     width: 4.5em;
   }
 
-  #addRemoveSearchingBox {
+  #addRemoveSearchingBox, #addEventBox {
     width: 20rem;
     height: 20rem;
   }

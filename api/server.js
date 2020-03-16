@@ -173,6 +173,7 @@ devices.get('/', (req,res) => {
             res.send(devices);
             logger.info("Sent Devices");
             updateStoredDevices(devices);
+            updateAlerts(data);
         }
         else{
             logger.info("Unable to Send Command");
@@ -243,19 +244,15 @@ devices.get('/:deviceID', (req,res) => {
 });
 
 ///SCHEDULE
-schedule.post('/', (req,res) => {
-    var startTime = req.body.start;
-    var endTime = req.body.end;
-    var day = req.body.day;
-    var title = req.body.title;
-    var devices = req.body.devices;
+schedule.post('/create', (req,res) => {
 
     var obj = {
-        "start":startTime,
-        "end":endTime,
-        "day":day,
-        "name":title,
-        "devices":devices
+        "start":req.body.start,
+        "end":req.body.end,
+        "day":req.body.day,
+        "title":req.body.title,
+        "deviceID":req.body.devicesID,
+        "deviceName":req.body.deviceName
     }
 
     if(verifyIdentity(reqIPhash, function(auth, err) {})){
@@ -275,6 +272,34 @@ schedule.post('/', (req,res) => {
 
     }
 });
+schedule.post('/edit', (req,res) => {
+
+    var obj = {
+        "start":req.body.start,
+        "day":req.body.day,
+        "title":req.body.title,
+        "deviceID":req.body.devicesID,
+        "deviceName":req.body.deviceName
+    }
+
+    if(verifyIdentity(reqIPhash, function(auth, err) {})){
+        MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
+            if (err) throw err;
+            var ebmsDB = db.db("ebms");
+    
+            ebmsDB.collection("schedule").insertOne(obj, function(err, result) {
+                if (err) throw err;
+                res.send(200);
+                ebmsDB.close();
+            });
+            logger.info("Added new event to schedule");
+        });
+    }
+    else{
+
+    }
+});
+// schedule.delete()
 schedule.get('/', (req,res) => {
     var reqIPhash =  hash.sha256().update(req.headers['x-forwarded-for'] || req.connection.remoteAddress).digest('hex');
     if(verifyIdentity(reqIPhash, function(auth, err) {})){
@@ -451,11 +476,8 @@ function initializeDatabase(callback) {
     MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
         if (err) return callback(null, err);
         let ebmsDB = db.db("ebms");
-        
-        // ebmsDB.createCollection("devices");
-        // ebmsDB.createCollection("rooms");
+
         // ebmsDB.createCollection("schedule");
-        // ebmsDB.createCollection("alerts");
         ebmsDB.collection("apiKeys").insertOne({"token":"3e48ef9d22e096da6838540fb846999890462c8a32730a4f7a5eaee6945315f7"}, function(err, result) {
             if (err) return callback(false, err);
             logger.info("Added localhost token to DB");
@@ -524,11 +546,35 @@ function loadDevices(reqIPhash,callback) {
     postGateway('json','{"control":{"cmd":"getdevice"}}', reqIPhash, 'sdk.cgi', function(data, err){
         if(!err){
             updateStoredDevices(parseDevices(data));
+            updateAlerts(data);
         }
         else{
             logger.info("Unable to get devices from Gateway");
             logger.info(err);
         }
+    });
+}
+
+function updateAlerts(devices) {
+    let parsedAlerts = [];
+    devices = JSON.parse(devices);
+    devices.device.forEach(element => {
+        if (element.lasttampertime != 0) {
+            let currentDeviceAlert = {'_id': element.uid, 'lastTamperTime':element.lasttampertime, 'name':element.channel[0].name};
+            parsedAlerts.push(currentDeviceAlert);
+        }
+    });
+    MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
+        if (err) throw err;
+        let ebmsDB = db.db("ebms");
+        let deviceIDs = [];
+        parsedAlerts.forEach(device => {
+            ebmsDB.collection("alerts").updateOne({_id: device._id},{ $set : {name:device.name}, $push : {tamperTimes:device.lastTamperTime}}, { upsert: true });
+            db.close();
+        });
+    
+        logger.info("Alerts Updated");
+
     });
 }
 
@@ -618,3 +664,8 @@ initializeDatabase(function(success, error) {
     else throw error;
 });
  //Call to load the devices
+
+setInterval( () => 
+    loadDevices("3e48ef9d22e096da6838540fb846999890462c8a32730a4f7a5eaee6945315f7", function(error, data){}),
+    300000
+);// Update Devices / alerts every 10 min
