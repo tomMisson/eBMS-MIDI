@@ -22,11 +22,19 @@ class Schedule extends Component {
             <div class="vl"></div>
             <input class="powerOffRadio" type="radio" id="powerOff" name="power" value="0" required/>
             <label class="powerOffLabel power" for="powerOff">off</label>
-        </div>
+        </div>,
+        mondayEvents:[],
+        tuesdayEvents:[],
+        wednesdayEvents:[],
+        thursdayEvents:[],
+        fridayEvents:[],
+        saturdayEvents:[],
+        sundayEvents:[]
     }
 
     componentDidMount() {
         this.changeActiveNav();
+        this.getSchedules();
         this.getDevicesInfo();
     }
 
@@ -74,6 +82,44 @@ class Schedule extends Component {
             });
         }
         this.setState({eventDevices:this.state.eventDevices, controllableDevices:this.state.controllableDevices})
+    }
+
+    async getSchedules() {
+        const response = await fetch("http://" +  window.location.hostname +":3000/api/schedule");
+        const data = await response.json();
+        for (let index = 0; index < data.length; index++) {
+            const event = data[index];
+            if (event.day == 0) {
+                this.state.mondayEvents.push(event);
+            }
+            else if (event.day == 1) {
+                this.state.tuesdayEvents.push(event);
+            }
+            else if (event.day == 2) {
+                this.state.wednesdayEvents.push(event);
+            }
+            else if (event.day == 3) {
+                this.state.thursdayEvents.push(event);
+            }
+            else if (event.day == 4) {
+                this.state.fridayEvents.push(event);
+            }
+            else if (event.day == 5) {
+                this.state.saturdayEvents.push(event);
+            }
+            else if (event.day == 6) {
+                this.state.sundayEvents.push(event);
+            }
+        }
+        this.setState({
+            mondayEvents:this.state.mondayEvents,
+            tuesdayEvents:this.state.tuesdayEvents,
+            wednesdayEvents:this.state.wednesdayEvents,
+            thursdayEvents:this.state.thursdayEvents,
+            fridayEvents:this.state.fridayEvents,
+            saturdayEvents:this.state.saturdayEvents,
+            sundayEvents:this.state.sundayEvents
+        });
     }
 
     changeConDevice(e) {
@@ -150,17 +196,40 @@ class Schedule extends Component {
     }
 
     sendEvent(sEvent) {
-        console.log(sEvent);
         var myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
         fetch("http://" +  window.location.hostname +":3000/api/schedule/create/", {method:"POST", body:JSON.stringify(sEvent), headers: myHeaders})
-        .then(res => console.log(res));
+        .then(res => {if(res.ok) alert("Event added")});
+    }
+
+    createEventElement(event) {
+        const hours = event.time.split(":")[0];
+        const min = event.time.split(":")[1];
+        let top = ((hours/24)*100)+"%";
+        const style = {
+            "top": top, 
+            "width": "100%", 
+            "height": "0.25rem", 
+            "background-color": "red",
+            "cursor": "pointer",
+            "position": "absolute"
+        };
+        console.log(event);
+        return <div id={event._id} style={style}></div>
     }
 
     render() { 
         let rConDeviceList = this.state.controllableDevices.map(function(device, index) { 
             return <option value={this.state.controllableDevices[index]._id + "-" + this.state.controllableDevices[index].name}>{this.state.controllableDevices[index].name}</option>
         }, this);
+
+        let eMonday = this.state.mondayEvents.map(function(event) { return this.createEventElement(event)}, this);
+        let eTuesday = this.state.tuesdayEvents.map(function(event) { return this.createEventElement(event)}, this);
+        let eWednesday = this.state.wednesdayEvents.map(function(event) { return this.createEventElement(event)}, this);
+        let eThursday = this.state.thursdayEvents.map(function(event) { return this.createEventElement(event)}, this);
+        let eFriday = this.state.fridayEvents.map(function(event) { return this.createEventElement(event)}, this);
+        let eSaturday = this.state.saturdayEvents.map(function(event) { return this.createEventElement(event)}, this);
+        let eSunday = this.state.sundayEvents.map(function(event) { return this.createEventElement(event)}, this);
 
         return ( 
             <section id="schedule">
@@ -174,7 +243,7 @@ class Schedule extends Component {
                     </thead>
                     <tbody>
                     <tr id="daysOfWeekHeaders">
-                        <th></th>
+                        <th id="noDay"></th>
                         <th>Monday</th>
                         <th>Tuesday</th>
                         <th>Wednesday</th>
@@ -183,15 +252,15 @@ class Schedule extends Component {
                         <th>Saturday</th>
                         <th>Sunday</th>
                     </tr>
-                    <tr>
+                    <tr id="dayColumns">
                         <td>00</td>
-                        <td rowspan="24"></td>
-                        <td rowspan="24"></td>
-                        <td rowspan="24"></td>
-                        <td rowspan="24"></td>
-                        <td rowspan="24"></td>
-                        <td rowspan="24"></td>
-                        <td rowspan="24"></td>
+                        <td rowspan="24">{eMonday}</td>
+                        <td rowspan="24">{eTuesday}</td>
+                        <td rowspan="24">{eWednesday}</td>
+                        <td rowspan="24">{eThursday}</td>
+                        <td rowspan="24">{eFriday}</td>
+                        <td rowspan="24">{eSaturday}</td>
+                        <td rowspan="24">{eSunday}</td>
                     </tr>
                     <tr>
                         <td>01</td>
@@ -261,9 +330,6 @@ class Schedule extends Component {
                     </tr>
                     <tr>
                         <td>23</td>
-                    </tr>
-                    <tr>
-                        <td>24</td>
                     </tr>
                     </tbody>
                 </table>
