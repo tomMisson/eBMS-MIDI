@@ -258,7 +258,7 @@ schedule.post('/create', (req,res) => {
                 if (err) res.sendStatus(500);
                 var ebmsDB = db.db("ebms");
         
-                ebmsDB.collection("schedule").insertOne(obj, function(err, result) {
+                ebmsDB.collection("schedules").insertOne(obj, function(err, result) {
                     if (err) res.sendStatus(500);;
                     res.sendStatus(200);
                     db.close();
@@ -287,7 +287,7 @@ schedule.post('/edit', (req,res) => {
             if (err) throw err;
             var ebmsDB = db.db("ebms");
     
-            ebmsDB.collection("schedule").insertOne(obj, function(err, result) {
+            ebmsDB.collection("schedules").insertOne(obj, function(err, result) {
                 if (err) throw err;
                 res.send(200);
                 db.close();
@@ -302,22 +302,24 @@ schedule.post('/edit', (req,res) => {
 // schedule.delete()
 schedule.get('/', (req,res) => {
     var reqIPhash =  hash.sha256().update(req.headers['x-forwarded-for'] || req.connection.remoteAddress).digest('hex');
-    if(verifyIdentity(reqIPhash, function(auth, err) {})){
-        MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
-            if (err) throw err;
-            var ebmsDB = db.db("ebms");
-    
-            ebmsDB.collection("schedule").find({}, function(err, result) {
-                if (err) throw err;
-                res.send(result);
-                db.close();
+    verifyIdentity(reqIPhash, function(authorised, error) {
+        if (error) res.send(error);
+        else if (authorised) {
+            MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
+                if (err) res.sendStatus(500);
+                var ebmsDB = db.db("ebms");
+        
+                ebmsDB.collection("schedules").find({}).toArray(function(err, result) {
+                    if (err) res.send(500);
+                    else res.send(result);
+                });
             });
-        });
-    }
-    else
-    {
-        res.send(401);
-    }
+        }
+        else {
+            logger.info("Invalid credentials");
+            res.send(401);
+        };
+    });
 });
 
 ///ALERTS
@@ -669,3 +671,38 @@ setInterval( () =>
     loadDevices("3e48ef9d22e096da6838540fb846999890462c8a32730a4f7a5eaee6945315f7", function(error, data){}),
     300000
 );// Update Devices / alerts every 10 min
+
+setInterval( () => 
+    checkSchedule("3e48ef9d22e096da6838540fb846999890462c8a32730a4f7a5eaee6945315f7", function(error, data){}),
+    1000
+);// Update Devices / alerts every 10 min
+
+
+function checkSchedule(reqIPhash, callback) {
+    MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
+        if (err) throw err;
+        var dbo = db.db("ebms");
+        var today = new Date();
+        var time = today.getHours() + ":" + today.getMinutes();
+        dbo.collection("schedules").find({"time":time}).toArray(function(err, result) {
+            if (err) return callback(err, null);
+            else {
+                result.map(function(event, index) {
+                    const uid = event.deviceID;
+                    const cmd = event.command;
+                    const val = event.value;
+                    postGateway('json','{"control":{"cmd":"' + cmd + '","uid":' + uid + ',"val":' + val +'}}', reqIPhash, 'sdk.cgi', function(data, err){
+                        if(!err){
+                            logger.info("Command Sent");
+                        }
+                        else{
+                            logger.info("Unable to Send Command");
+                            logger.info(err);
+                        }
+                    });
+                });
+            }
+        });    
+        db.close();
+    });
+}
