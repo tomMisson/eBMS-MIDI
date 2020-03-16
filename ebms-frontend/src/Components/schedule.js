@@ -205,7 +205,8 @@ class Schedule extends Component {
     createEventElement(event) {
         const hours = event.time.split(":")[0];
         const min = event.time.split(":")[1];
-        let top = ((hours/24)*100)+"%";
+        let smallTop = (((min/60)*100)/24);
+        let top = (((hours/24)*100)+smallTop)+"%";
         const style = {
             "top": top, 
             "width": "100%", 
