@@ -315,21 +315,20 @@ alerts.get('/', (req,res) => {
 });
 
 ///ROOMS
-rooms.post('/', (req,res) => {
-    //Update all the rooms with devices or names
-    var title = req.body.title;
-    var devices = req.body.devices;
+rooms.post('/:roomName', (req,res) => {
+    var room = req.params.roomName;
+    var reqIPhash =  hash.sha256().update(req.headers['x-forwarded-for'] || req.connection.remoteAddress).digest('hex');
+    postGateway('jsonsetall','{"rooms":[{"title":'+ room +'}]}', reqIPhash, 'network.cgi', function(data, err){});
+    postGateway('jsonsetall','{"rooms":[{"title":"ROOMTITLE","targets":[{"dev":DEVICEUID,"ch":0,"if":256}]}]}', reqIPhash, 'network.cgi', function(data, err){});
 
-    var obj = {
-        "name":title,
-        "devices":devices
-    }
-    ebmsDB.collection("apiKeys").insertOne(obj, function(err, result) {
-        if (err) throw err;
-        res.send(result);
-        ebmsDB.close();
-    });
-    logger.info("Added new event to schedule");
+
+});
+rooms.delete('/:roomName', (req,res) => {
+    var room = req.params.roomName;
+    var reqIPhash =  hash.sha256().update(req.headers['x-forwarded-for'] || req.connection.remoteAddress).digest('hex');
+    postGateway('jsonsetall','{"rooms":[{"title":'+ room +'}]}', reqIPhash, 'network.cgi', function(data, err){});
+    logger.log("Deleted Room "+ room);
+
 });
 rooms.get('/', (req,res) => {
     var reqIPhash =  hash.sha256().update(req.headers['x-forwarded-for'] || req.connection.remoteAddress).digest('hex');
@@ -369,27 +368,6 @@ rooms.get('/', (req,res) => {
         }
     });
 });
-rooms.get('/:roomName', (req, res)=> {
-    var reqIPhash =  hash.sha256().update(req.headers['x-forwarded-for'] || req.connection.remoteAddress).digest('hex');
-    var room = req.params.roomName;
-    if(verifyIdentity(reqIPhash, function(auth, err) {})){
-        MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
-            if (err) throw err;
-            var ebmsDB = db.db("ebms");
-    
-            ebmsDB.collection("rooms").find({"name": room}, function(err, result) {
-                if (err) throw err;
-                res.send(result);
-                ebmsDB.close();
-            });
-        });
-    }
-    else
-    {
-        res.send(401);
-    }
-});
-
 
 
 ///
