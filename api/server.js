@@ -245,32 +245,32 @@ devices.get('/:deviceID', (req,res) => {
 
 ///SCHEDULE
 schedule.post('/create', (req,res) => {
-
-    var obj = {
-        "start":req.body.start,
-        "end":req.body.end,
-        "day":req.body.day,
-        "title":req.body.title,
-        "deviceID":req.body.devicesID,
-        "deviceName":req.body.deviceName
-    }
-
-    if(verifyIdentity(reqIPhash, function(auth, err) {})){
-        MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
-            if (err) throw err;
-            var ebmsDB = db.db("ebms");
+    var reqIPhash =  hash.sha256().update(req.headers['x-forwarded-for'] || req.connection.remoteAddress).digest('hex');
     
-            ebmsDB.collection("schedule").insertOne(obj, function(err, result) {
-                if (err) throw err;
-                res.send(200);
-                ebmsDB.close();
-            });
-            logger.info("Added new event to schedule");
-        });
-    }
-    else{
+    var obj = JSON.parse(JSON.stringify(req.body));
 
-    }
+    console.log(obj);
+
+    verifyIdentity(reqIPhash, function(authorised, error) {
+        if (error) res.send(error);
+        else if (authorised) {
+            MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
+                if (err) res.sendStatus(500);
+                var ebmsDB = db.db("ebms");
+        
+                ebmsDB.collection("schedule").insertOne(obj, function(err, result) {
+                    if (err) res.sendStatus(500);;
+                    res.sendStatus(200);
+                    db.close();
+                });
+                logger.info("Added new event to schedule");
+            });
+        }
+        else {
+            logger.info("Invalid credentials");
+            res.send(401);
+        };
+    });
 });
 schedule.post('/edit', (req,res) => {
 
@@ -290,7 +290,7 @@ schedule.post('/edit', (req,res) => {
             ebmsDB.collection("schedule").insertOne(obj, function(err, result) {
                 if (err) throw err;
                 res.send(200);
-                ebmsDB.close();
+                db.close();
             });
             logger.info("Added new event to schedule");
         });
@@ -310,7 +310,7 @@ schedule.get('/', (req,res) => {
             ebmsDB.collection("schedule").find({}, function(err, result) {
                 if (err) throw err;
                 res.send(result);
-                ebmsDB.close();
+                db.close();
             });
         });
     }
@@ -333,7 +333,7 @@ alerts.get('/', (req,res) => {
         ebmsDB.collection("alerts").find({}, function(err, result) {
             if (err) throw err;
             res.send(result);
-            ebmsDB.close();
+            db.close();
         });
         logger.info("Added new event to schedule");
     });
@@ -352,7 +352,7 @@ rooms.post('/', (req,res) => {
     ebmsDB.collection("apiKeys").insertOne(obj, function(err, result) {
         if (err) throw err;
         res.send(result);
-        ebmsDB.close();
+        db.close();
     });
     logger.info("Added new event to schedule");
 });
@@ -405,7 +405,7 @@ rooms.get('/:roomName', (req, res)=> {
             ebmsDB.collection("rooms").find({"name": room}, function(err, result) {
                 if (err) throw err;
                 res.send(result);
-                ebmsDB.close();
+                db.close();
             });
         });
     }

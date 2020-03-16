@@ -151,8 +151,10 @@ class Schedule extends Component {
 
     sendEvent(sEvent) {
         console.log(sEvent);
-        //fetch("http://" +  window.location.hostname +":3000/api/schedule/create/", {method:"POST", body:sEvent})
-        //.then(res => console.log(res));
+        var myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+        fetch("http://" +  window.location.hostname +":3000/api/schedule/create/", {method:"POST", body:JSON.stringify(sEvent), headers: myHeaders})
+        .then(res => console.log(res));
     }
 
     render() { 
