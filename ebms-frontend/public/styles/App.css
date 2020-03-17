@@ -8,6 +8,8 @@
 }
 
 .scheduleTable {
+  width: -webkit-fill-available;
+  position: relative;
   border-spacing: 0;
   box-shadow: 1px 1px 2px #888888;
   color: #727272;
@@ -16,8 +18,30 @@
   border-radius: 0.25rem;
   box-shadow: 1px 1px 2px #888888;
   background-color: white;
-  width: 100%;
 }
+
+.scheduleTable tr {
+  height: 2rem;
+}
+
+.scheduleTable th {
+  border-bottom: solid rgba(224, 224, 224, 0.466);
+}
+
+.columnBorder td, .columnBorder th {
+  border-left: solid rgb(224, 224, 224);
+  position: relative;
+}
+
+.noDay {
+  width: 5.5% !important;
+  border-left: none !important;
+}
+
+#daysOfWeekHeaders th {
+  width: 13.5%;
+}
+
 
 #daysOfWeekHeaders th {
   -webkit-writing-mode: vertical-rl;
@@ -30,6 +54,30 @@ hr {
   border: 1px solid rgb(175, 175, 175);
   border-radius: 50%;
   background-color: rgb(175, 175, 175);
+}
+
+.tooltip {
+  position: relative;
+  width: 100%;
+}
+
+.tooltiptext {
+  display: none;
+  position: absolute;
+  bottom: -100%;
+  max-width: 8rem;
+  min-width: 100%;
+  background-color: #bdbdbd62;
+  color: #000000;
+  line-clamp: 4;
+  -webkit-line-clamp: 4;
+  z-index: 10;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.eventDiv:hover .tooltiptext {
+  display: block !important;
 }
 
 #sirenSound {
@@ -102,7 +150,7 @@ main {
   visibility: hidden;
 }
 
-#addRemoveDeviceScreen, #addEventScreen {
+#addRemoveDeviceScreen, #addEventScreen, #editEventScreen {
   background-color: #0000007c;
   z-index: 2000;
   align-items: center;
@@ -113,6 +161,7 @@ main {
   padding: 0.5rem 3rem;
   border-radius: 1rem;
   box-shadow: 2px 2px 3px rgb(0, 34, 63);
+  cursor: pointer;
 }
 
 #addRemoveAbortButton:active {
@@ -122,9 +171,9 @@ main {
   background-color: rgba(0, 47, 255, 0.596);
 }
 
-#addRemoveSearchingBox, #addEventBox {
+#addRemoveSearchingBox, #addEventBox, #editEventBox {
   width: 80vw;
-  height: 80vw;
+  min-height: 80vw;
   background-color: white;
   border-radius: 3rem;
   align-items: center;
@@ -135,11 +184,16 @@ main {
   line-height: normal;
 }
 
+#addEventBox, #editEventBox {
+  width: 90vw;
+  min-height: 90vw;
+}
+
 #addRemoveSearchingBox h2, #addRemoveSearchingBox h3 {
   min-width: 100%;
 }
 
-#addEventBox h2, #addEventBox h3 {
+#addEventBox h2, #addEventBox h3, #editEventBox h2, #editEventBox h3 {
   min-width: 100%;
 }
 
@@ -328,6 +382,14 @@ nav li:active {
   text-align: center;
 }
 
+select, input, .deleteButton {
+  padding: 0.5rem 3rem;
+  width: 16rem;
+  text-align: center;
+  box-shadow: 1px 1px 2px #888888;
+  border-radius: 1rem;
+}
+
 .power {
   padding: 0.5rem 3rem;
   width: 8rem;
@@ -469,11 +531,14 @@ nav li:active {
     display: inline;
   }
 
-  
+  #addEventBox, #editEventBox {
+    width: 23rem;
+    min-height: 23rem;
+  }
 
-  #addRemoveSearchingBox, #addEventBox {
+  #addRemoveSearchingBox {
     width: 18rem;
-    height: 18rem;
+    min-height: 18rem;
   }
 }
 
@@ -508,9 +573,14 @@ nav li:active {
     position: fixed;
   }
 
-  #addRemoveSearchingBox, #addEventBox{
+  #addEventBox, #editEventBox {
+    width: 24rem;
+    min-height: 24rem;
+  }
+
+  #addRemoveSearchingBox {
     width: 19rem;
-    height: 19rem;
+    min-height: 19rem;
   }
 }
 
@@ -542,8 +612,13 @@ nav li:active {
     width: 4.5em;
   }
 
-  #addRemoveSearchingBox, #addEventBox {
+  #addEventBox, #editEventBox {
+    width: 25rem;
+    min-height: 25rem;
+  }
+
+  #addRemoveSearchingBox {
     width: 20rem;
-    height: 20rem;
+    min-height: 20rem;
   }
 }

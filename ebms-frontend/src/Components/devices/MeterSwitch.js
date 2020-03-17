@@ -10,6 +10,10 @@ class MeterSwitch extends Component {
         fetch("http://" +  window.location.hostname +":3000/api/control/" + this.props.deviceInfo._id + "/switch/" + 0);
     }
 
+    removeClick = () => {
+        this.props.removeFunction();
+    }
+
     render() {
         let power = "off"
         if (this.props.deviceInfo.channels[0].basicValue/255 == 0) power = "off";
@@ -32,7 +36,7 @@ class MeterSwitch extends Component {
                 </section>
                 <section class="deviceFooter dis-flx">
                     <h5>Last Updated: ...</h5>
-                    <img class="smallIcon roundButton dangerIcon" src="images/generalIcons/remove.svg"></img>
+                    <img class="smallIcon roundButton dangerIcon" onClick={this.removeClick} src="images/generalIcons/remove.svg"></img>
                 </section>
             </div>
         
