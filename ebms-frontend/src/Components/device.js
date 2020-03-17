@@ -178,7 +178,7 @@ class Devices extends Component {
                     <section id="addRemoveSearchingBox" class="">
                         <h2>{this.state.searchText}{this.state.searchEllipsis}</h2>
                         <h3>{this.state.timer} Seconds Remaining</h3>
-                        <button id="addRemoveAbortButton" onClick={this.cancelAddRemoveDevice.bind(this)}><b>Cancle</b></button>
+                        <button id="addRemoveAbortButton" onClick={this.cancelAddRemoveDevice.bind(this)}><b>Cancel</b></button>
                     </section>
                 </div>
                 <button id="AddDevice" onClick={this.addDevice.bind(this)}><img class="largeIcon roundButton positiveIcon" src="images/generalIcons/add.svg"></img></button>

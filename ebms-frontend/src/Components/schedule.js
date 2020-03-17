@@ -29,7 +29,8 @@ class Schedule extends Component {
         thursdayEvents:[],
         fridayEvents:[],
         saturdayEvents:[],
-        sundayEvents:[]
+        sundayEvents:[],
+        eventID:0
     }
 
     componentDidMount() {
@@ -87,6 +88,13 @@ class Schedule extends Component {
     async getSchedules() {
         const response = await fetch("http://" +  window.location.hostname +":3000/api/schedule");
         const data = await response.json();
+        this.state.mondayEvents=[];
+        this.state.tuesdayEvents=[];
+        this.state.wednesdayEvents=[];
+        this.state.thursdayEvents=[];
+        this.state.fridayEvents=[];
+        this.state.saturdayEvents=[];
+        this.state.sundayEvents=[];
         for (let index = 0; index < data.length; index++) {
             const event = data[index];
             if (event.day == 0) {
@@ -122,10 +130,20 @@ class Schedule extends Component {
         });
     }
 
-    changeConDevice(e) {
+    changeConDevice(update, e) {
         const deviceName = e.target.value.split("-")[1];
+        let stateName = "currentDeviceControlls";
+        let name = "power";
+        let powerOn = "powerOn";
+        let powerOff = "powerOff";
+        if(update) {
+            name += "Update";
+            powerOn += "Update";
+            powerOff += "Update";
+            stateName += "Update"
+        }
         if (deviceName === "gatewaySiren") {
-            this.setState({currentDeviceControlls:
+            this.setState({[stateName]:
                 <div class="controls siren">
                     <select id='sirenSound' name='gatewaySiren'>
                         <option value='1'>Siren: 1</option>
@@ -137,22 +155,22 @@ class Schedule extends Component {
                     </select>
                     <br/>
                     <hr size="80%"/>
-                    <input class="powerOnRadio" type="radio" id="powerOn" name="power" value="255"/>
-                    <label class="powerOnLabel power" for="powerOn">on</label>
+                    <input class="powerOnRadio" type="radio" id={powerOn} name={name} value="255"/>
+                    <label class="powerOnLabel power" for={powerOn}>on</label>
                     <div class="vl"></div>
-                    <input class="powerOffRadio" type="radio" id="powerOff" name="power" value="0" required/>
-                    <label class="powerOffLabel power" for="powerOff">off</label>
+                    <input class="powerOffRadio" type="radio" id={powerOff} name={name} value="0" required/>
+                    <label class="powerOffLabel power" for={powerOff}>off</label>
                 </div>
             });
         }
         else if (["EnergyPlug", "SWITCH_ALL"].includes(deviceName)) {
-            this.setState({currentDeviceControlls:
+            this.setState({[stateName]:
                 <div class="controls">
-                    <input class="powerOnRadio" type="radio" id="powerOn" name="power" value="255"/>
-                    <label class="powerOnLabel power" for="powerOn">on</label>
+                    <input class="powerOnRadio" type="radio" id={powerOn} name={name} value="255"/>
+                    <label class="powerOnLabel power" for={powerOn}>on</label>
                     <div class="vl"></div>
-                    <input class="powerOffRadio" type="radio" id="powerOff" name="power" value="0" required/>
-                    <label class="powerOffLabel power" for="powerOff">off</label>
+                    <input class="powerOffRadio" type="radio" id={powerOff} name={name} value="0" required/>
+                    <label class="powerOffLabel power" for={powerOff}>off</label>
                 </div>
             });
         }
@@ -199,12 +217,18 @@ class Schedule extends Component {
         var myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
         fetch("http://" +  window.location.hostname +":3000/api/schedule/create/", {method:"POST", body:JSON.stringify(sEvent), headers: myHeaders})
-        .then(res => {if(res.ok) alert("Event added")});
+            .then(res => {
+                if(res.ok) {
+                    this.getSchedules();
+                    console.log(res);
+                    alert("Event added");
+                }
+            });
     }
 
-    createEventElement(event) {
-        const hours = event.time.split(":")[0];
-        const min = event.time.split(":")[1];
+    createEventElement(eventInfo) {
+        const hours = eventInfo.time.split(":")[0];
+        const min = eventInfo.time.split(":")[1];
         let smallTop = (((min/60)*100)/24);
         let top = (((hours/24)*100)+smallTop)+"%";
         const style = {
@@ -215,8 +239,79 @@ class Schedule extends Component {
             "cursor": "pointer",
             "position": "absolute"
         };
-        console.log(event);
-        return <div id={event._id} style={style}></div>
+    return <div id={eventInfo._id} style={style} onClick={this.showEditEvent.bind(this, eventInfo._id, eventInfo.title, eventInfo.time, eventInfo.deviceID, eventInfo.day)} class="eventDiv"><div class="tooltip"><span class="tooltiptext">{eventInfo.time}<br/>{eventInfo.title}</span></div></div>
+    }
+
+    editEvent(e) {
+        const form = document.getElementById("editEventBox");
+        const valid = form.reportValidity();
+        if (valid) {
+            const selectedDevice = document.getElementById("controllableDevicesUpdate");
+            const deviceName = selectedDevice.value.split("-")[1];
+            const deviceID = selectedDevice.value.split("-")[0];
+            const radios = form.elements["powerUpdate"];
+            let val;
+            const event = {};
+            event._id = e.target.id;
+            event.title = document.getElementById("eventTitleUpdate").value;
+            event.day = document.getElementById("eventDayUpdate").value;
+            event.deviceID = deviceID;
+            event.time = document.getElementById("eventTimeUpdate").value;
+            for (var i=0, len=radios.length; i<len; i++) {
+                if ( radios[i].checked ) {
+                    val = radios[i].value;
+                    break;
+                }
+            }
+            event.value = val;
+            if (deviceName === "gatewaySiren") {
+                event.command = "syssound";
+                if (val == 255) event.value = document.getElementById("sirenSound").value;
+            }
+            else if (["EnergyPlug", "SWITCH_ALL"].includes(deviceName)) {
+                event.command = "switch";
+            }
+            this.sendEventUpdate(event);
+        }
+    }
+
+    sendEventUpdate(sEvent) {
+        var myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+        fetch("http://" +  window.location.hostname +":3000/api/schedule/edit/", {method:"POST", body:JSON.stringify(sEvent), headers: myHeaders})
+            .then(res => {
+                if(res.ok) {
+                    this.getSchedules();
+                    alert("Event Updated");
+                }
+            });
+    }
+
+    async showEditEvent(eventID, eventTitle, eventTime, eventDeviceID, eventDay) {
+        await this.getDevicesInfo();
+        const eventBox = document.getElementById("editEventBox");
+        const titleInput = document.getElementById("eventTitleUpdate");
+        const timeInput = document.getElementById("eventTimeUpdate");
+        const deviceSelect = document.getElementById("controllableDevicesUpdate");
+        const daySelect = document.getElementById("eventDayUpdate");
+        titleInput.value = eventTitle;
+        timeInput.value = eventTime;
+        this.setState({eventID:eventID});
+        daySelect.selectedIndex = eventDay;
+        for (let index = 0; index < deviceSelect.options.length; index++) {
+            const option = deviceSelect.options[index];
+            if (option.value.split("-")[0] == eventDeviceID) {
+                deviceSelect.selectedIndex = index;
+                break;
+            }
+        }
+        var ev2 = new Event('change', { bubbles: true});
+        deviceSelect.dispatchEvent(ev2);
+        document.getElementById("editEventScreen").classList.remove("invisible");
+    }
+
+    hideEditEvent() {
+        document.getElementById("editEventScreen").classList.add("invisible");
     }
 
     render() { 
@@ -243,8 +338,8 @@ class Schedule extends Component {
                         </tr>
                     </thead>
                     <tbody>
-                    <tr id="daysOfWeekHeaders">
-                        <th id="noDay"></th>
+                    <tr id="daysOfWeekHeaders" class="columnBorder">
+                        <th class="noDay"></th>
                         <th>Monday</th>
                         <th>Tuesday</th>
                         <th>Wednesday</th>
@@ -253,8 +348,8 @@ class Schedule extends Component {
                         <th>Saturday</th>
                         <th>Sunday</th>
                     </tr>
-                    <tr id="dayColumns">
-                        <td>00</td>
+                    <tr id="dayColumns" class="columnBorder">
+                        <td class="noDay">00</td>
                         <td rowspan="24">{eMonday}</td>
                         <td rowspan="24">{eTuesday}</td>
                         <td rowspan="24">{eWednesday}</td>
@@ -334,12 +429,43 @@ class Schedule extends Component {
                     </tr>
                     </tbody>
                 </table>
+                <div id="editEventScreen" class="invisible pos-fix right left top bottom dis-flx">
+                    <form id="editEventBox" class="" onSubmit={this.preventSubmit.bind(this)}>
+                        <div id="scheduleDetails">
+                            <input type="text" id="eventTitleUpdate" placeholder="Title..." required/>
+                            <br/><br/>
+                            <select id='controllableDevicesUpdate' onChange={this.changeConDevice.bind(this,true)}>
+                                {rConDeviceList}
+                            </select>
+                            <br/><br/>
+                            {this.state.currentDeviceControllsUpdate}
+                            <br/><br/>
+                            <select id='eventDayUpdate' required>
+                                <option value='0'>Monday</option>
+                                <option value='1'>Tuesday</option>
+                                <option value='2'>Wednesday</option>
+                                <option value='3'>Thursday</option>
+                                <option value='4'>Friday</option>
+                                <option value='5'>Saturday</option>
+                                <option value='6'>Sunday</option>
+                            </select>
+                            <br/><br/>
+                            <input id="eventTimeUpdate" type="time" placeholder="12:00" required></input>
+                            <br/><br/>
+                            <div class="controls">
+                                <button class="powerOn power" type="submit" id={this.state.eventID} onClick={this.editEvent.bind(this)}>Update</button>
+                                <div class="vl"></div>
+                                <button class="powerOff power" onClick={this.hideEditEvent.bind(this)}>Cancel</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
                 <div id="addEventScreen" class="invisible pos-fix right left top bottom dis-flx">
                     <form id="addEventBox" class="" onSubmit={this.preventSubmit.bind(this)}>
                         <div id="scheduleDetails">
-                            <input type="text" id="eventTitle" required/>
+                            <input type="text" id="eventTitle" placeholder="Title..." required/>
                             <br/><br/>
-                            <select id='controllableDevices' onChange={this.changeConDevice.bind(this)}>
+                            <select id='controllableDevices' onChange={this.changeConDevice.bind(this, false)}>
                                 {rConDeviceList}
                             </select>
                             <br/><br/>
@@ -354,12 +480,14 @@ class Schedule extends Component {
                                 <option value='5'>Saturday</option>
                                 <option value='6'>Sunday</option>
                             </select>
-                            <input id="eventTime" type="time" required></input>
-                        </div>
-                        <div class="controls">
-                            <button class="powerOn power" type="submit" onClick={this.addEvent.bind(this)}>AddEvent</button>
-                            <div class="vl"></div>
-                            <button class="powerOff power" onClick={this.hideAddEvent.bind(this)}>Cancel</button>
+                            <br/><br/>
+                            <input id="eventTime" type="time" placeholder="12:00" required></input>
+                            <br/><br/>
+                            <div class="controls">
+                                <button class="powerOn power" type="submit" onClick={this.addEvent.bind(this)}>AddEvent</button>
+                                <div class="vl"></div>
+                                <button class="powerOff power" onClick={this.hideAddEvent.bind(this)}>Cancel</button>
+                            </div>
                         </div>
                     </form>
                 </div>

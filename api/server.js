@@ -6,6 +6,7 @@ const request = require('request');
 const http = require('http');
 const cors = require('cors');
 let MongoClient = require('mongodb').MongoClient;
+let ObjectID = require('mongodb').ObjectID;
 
 const { log, ExpressAPILogMiddleware } = require('@rama41222/node-logger');
 const credentials = Buffer.from(process.env.USRNAME + ':' + process.env.PSWD).toString('base64');
@@ -249,8 +250,6 @@ schedule.post('/create', (req,res) => {
     
     var obj = JSON.parse(JSON.stringify(req.body));
 
-    console.log(obj);
-
     verifyIdentity(reqIPhash, function(authorised, error) {
         if (error) res.send(error);
         else if (authorised) {
@@ -259,11 +258,12 @@ schedule.post('/create', (req,res) => {
                 var ebmsDB = db.db("ebms");
         
                 ebmsDB.collection("schedules").insertOne(obj, function(err, result) {
-                    if (err) res.sendStatus(500);;
-                    res.sendStatus(200);
+                    if (err) res.sendStatus(500);
+                    else res.sendStatus(200);
                     db.close();
                 });
                 logger.info("Added new event to schedule");
+                db.close();
             });
         }
         else {
@@ -273,31 +273,33 @@ schedule.post('/create', (req,res) => {
     });
 });
 schedule.post('/edit', (req,res) => {
-
-    var obj = {
-        "start":req.body.start,
-        "day":req.body.day,
-        "title":req.body.title,
-        "deviceID":req.body.devicesID,
-        "deviceName":req.body.deviceName
-    }
-
-    if(verifyIdentity(reqIPhash, function(auth, err) {})){
-        MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
-            if (err) throw err;
-            var ebmsDB = db.db("ebms");
+    var reqIPhash =  hash.sha256().update(req.headers['x-forwarded-for'] || req.connection.remoteAddress).digest('hex');
     
-            ebmsDB.collection("schedules").insertOne(obj, function(err, result) {
-                if (err) throw err;
-                res.send(200);
+    var obj = JSON.parse(JSON.stringify(req.body));
+
+    verifyIdentity(reqIPhash, function(authorised, error) {
+        if (error) res.send(error);
+        else if (authorised) {
+            MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
+                if (err) res.sendStatus(500);
+                var ebmsDB = db.db("ebms");
+                objectId = new ObjectID(obj._id);
+                delete obj._id;
+                ebmsDB.collection("schedules").updateOne({_id: objectId},{ $set : obj}, function(err, result) {
+                    console.log(err);
+                    if (err) res.sendStatus(500);
+                    else res.sendStatus(200);
+                    db.close();
+                });
+                logger.info("Update the schedule");
                 db.close();
             });
-            logger.info("Added new event to schedule");
-        });
-    }
-    else{
-
-    }
+        }
+        else {
+            logger.info("Invalid credentials");
+            res.send(401);
+        };
+    });
 });
 // schedule.delete()
 schedule.get('/', (req,res) => {
@@ -674,7 +676,7 @@ setInterval( () =>
 
 setInterval( () => 
     checkSchedule("3e48ef9d22e096da6838540fb846999890462c8a32730a4f7a5eaee6945315f7", function(error, data){}),
-    1000
+    60000
 );// Update Devices / alerts every 10 min
 
 
@@ -684,7 +686,13 @@ function checkSchedule(reqIPhash, callback) {
         var dbo = db.db("ebms");
         var today = new Date();
         var time = today.getHours() + ":" + today.getMinutes();
-        dbo.collection("schedules").find({"time":time}).toArray(function(err, result) {
+        var day = today.getDay();
+        day += -1;
+        if (day < 0) day = 6;
+        day += "";
+        console.log(day);
+        console.log(typeof day);
+        dbo.collection("schedules").find({"time":time, "day":day}).toArray(function(err, result) {
             if (err) return callback(err, null);
             else {
                 result.map(function(event, index) {
@@ -699,8 +707,11 @@ function checkSchedule(reqIPhash, callback) {
                             logger.info("Unable to Send Command");
                             logger.info(err);
                         }
+                        db.close();
                     });
                 });
+                
+                db.close();
             }
         });    
         db.close();
