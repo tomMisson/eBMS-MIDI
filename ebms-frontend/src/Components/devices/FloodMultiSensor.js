@@ -9,10 +9,6 @@ class FloodMultiSensor extends Component {
         style: {}
     }
 
-    componentWillUnmount() {
-        console.log("flood be gone");
-    }
-
     removeClick = () => {
         this.props.removeFunction();
     }

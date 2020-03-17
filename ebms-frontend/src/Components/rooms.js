@@ -23,8 +23,6 @@ class Rooms extends Component {
     componentWillUnmount() {
 
         clearInterval(this.intervalID);
-
-        console.log("Rooms Unmounted");
     } 
 
     async getRoomsInfo() {
