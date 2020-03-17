@@ -118,7 +118,6 @@ class Devices extends Component {
                 channel.name = channel.name.replace(/ /g, "");
                 if (supportedDevices.includes(channel.name)) {
                     deviceIDs.push(device._id);
-                    //console.log(device._id);
                     device.name = channel.name;
                     let deviceExists = false
                     let deviceIndex = 0;
