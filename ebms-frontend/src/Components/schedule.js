@@ -287,6 +287,20 @@ class Schedule extends Component {
             });
     }
 
+    deleteEvent(e) {
+        console.log(e.target.id)
+        var myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+        fetch("http://" +  window.location.hostname +":3000/api/schedule/", {method:"DELETE", body:JSON.stringify({id:e.target.id}), headers: myHeaders})
+            .then(res => {
+                if(res.ok) {
+                    this.getSchedules();
+                    this.hideEditEvent();
+                    alert("Event Deleted");
+                }
+            });
+    }
+
     async showEditEvent(eventID, eventTitle, eventTime, eventDeviceID, eventDay) {
         await this.getDevicesInfo();
         const eventBox = document.getElementById("editEventBox");
@@ -457,6 +471,8 @@ class Schedule extends Component {
                                 <div class="vl"></div>
                                 <button class="powerOff power" onClick={this.hideEditEvent.bind(this)}>Cancel</button>
                             </div>
+                            <br/>
+                            <button class="deleteButton" id={this.state.eventID} onClick={this.deleteEvent.bind(this)}>DeleteEvent</button>
                         </div>
                     </form>
                 </div>

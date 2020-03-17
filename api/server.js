@@ -301,7 +301,31 @@ schedule.post('/edit', (req,res) => {
         };
     });
 });
-// schedule.delete()
+schedule.delete('/', (req,res) => {
+    var reqIPhash =  hash.sha256().update(req.headers['x-forwarded-for'] || req.connection.remoteAddress).digest('hex');
+
+    verifyIdentity(reqIPhash, function(authorised, error) {
+        if (error) res.send(error);
+        else if (authorised) {
+            MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
+                if (err) res.sendStatus(500);
+                var ebmsDB = db.db("ebms");
+                objectId = new ObjectID(req.body.id);
+                ebmsDB.collection("schedules").deleteOne({_id: objectId}, function(err, result) {
+                    if (err) res.sendStatus(500);
+                    else res.sendStatus(200);
+                    db.close();
+                });
+                logger.info("deleted from the schedule");
+                db.close();
+            });
+        }
+        else {
+            logger.info("Invalid credentials");
+            res.send(401);
+        };
+    });
+});
 schedule.get('/', (req,res) => {
     var reqIPhash =  hash.sha256().update(req.headers['x-forwarded-for'] || req.connection.remoteAddress).digest('hex');
     verifyIdentity(reqIPhash, function(authorised, error) {

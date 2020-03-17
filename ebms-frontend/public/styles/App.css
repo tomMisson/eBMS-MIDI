@@ -161,6 +161,7 @@ main {
   padding: 0.5rem 3rem;
   border-radius: 1rem;
   box-shadow: 2px 2px 3px rgb(0, 34, 63);
+  cursor: pointer;
 }
 
 #addRemoveAbortButton:active {
@@ -381,7 +382,7 @@ nav li:active {
   text-align: center;
 }
 
-select, input {
+select, input, .deleteButton {
   padding: 0.5rem 3rem;
   width: 16rem;
   text-align: center;
