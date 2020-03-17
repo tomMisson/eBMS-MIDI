@@ -6,6 +6,7 @@ const request = require('request');
 const http = require('http');
 const cors = require('cors');
 let MongoClient = require('mongodb').MongoClient;
+let ObjectID = require('mongodb').ObjectID;
 
 const { log, ExpressAPILogMiddleware } = require('@rama41222/node-logger');
 const credentials = Buffer.from(process.env.USRNAME + ':' + process.env.PSWD).toString('base64');
@@ -173,6 +174,7 @@ devices.get('/', (req,res) => {
             res.send(devices);
             logger.info("Sent Devices");
             updateStoredDevices(devices);
+            updateAlerts(data);
         }
         else{
             logger.info("Unable to Send Command");
@@ -243,56 +245,107 @@ devices.get('/:deviceID', (req,res) => {
 });
 
 ///SCHEDULE
-schedule.post('/', (req,res) => {
-    var startTime = req.body.start;
-    var endTime = req.body.end;
-    var day = req.body.day;
-    var title = req.body.title;
-    var devices = req.body.devices;
-
-    var obj = {
-        "start":startTime,
-        "end":endTime,
-        "day":day,
-        "name":title,
-        "devices":devices
-    }
-
-    if(verifyIdentity(reqIPhash, function(auth, err) {})){
-        MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
-            if (err) throw err;
-            var ebmsDB = db.db("ebms");
+schedule.post('/create', (req,res) => {
+    var reqIPhash =  hash.sha256().update(req.headers['x-forwarded-for'] || req.connection.remoteAddress).digest('hex');
     
-            ebmsDB.collection("schedule").insertOne(obj, function(err, result) {
-                if (err) throw err;
-                res.send(200);
-                ebmsDB.close();
-            });
-            logger.info("Added new event to schedule");
-        });
-    }
-    else{
+    var obj = JSON.parse(JSON.stringify(req.body));
 
-    }
+    verifyIdentity(reqIPhash, function(authorised, error) {
+        if (error) res.send(error);
+        else if (authorised) {
+            MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
+                if (err) res.sendStatus(500);
+                var ebmsDB = db.db("ebms");
+        
+                ebmsDB.collection("schedules").insertOne(obj, function(err, result) {
+                    if (err) res.sendStatus(500);
+                    else res.sendStatus(200);
+                    db.close();
+                });
+                logger.info("Added new event to schedule");
+                db.close();
+            });
+        }
+        else {
+            logger.info("Invalid credentials");
+            res.send(401);
+        };
+    });
+});
+schedule.post('/edit', (req,res) => {
+    var reqIPhash =  hash.sha256().update(req.headers['x-forwarded-for'] || req.connection.remoteAddress).digest('hex');
+    
+    var obj = JSON.parse(JSON.stringify(req.body));
+
+    verifyIdentity(reqIPhash, function(authorised, error) {
+        if (error) res.send(error);
+        else if (authorised) {
+            MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
+                if (err) res.sendStatus(500);
+                var ebmsDB = db.db("ebms");
+                objectId = new ObjectID(obj._id);
+                delete obj._id;
+                ebmsDB.collection("schedules").updateOne({_id: objectId},{ $set : obj}, function(err, result) {
+                    console.log(err);
+                    if (err) res.sendStatus(500);
+                    else res.sendStatus(200);
+                    db.close();
+                });
+                logger.info("Update the schedule");
+                db.close();
+            });
+        }
+        else {
+            logger.info("Invalid credentials");
+            res.send(401);
+        };
+    });
+});
+schedule.delete('/', (req,res) => {
+    var reqIPhash =  hash.sha256().update(req.headers['x-forwarded-for'] || req.connection.remoteAddress).digest('hex');
+
+    verifyIdentity(reqIPhash, function(authorised, error) {
+        if (error) res.send(error);
+        else if (authorised) {
+            MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
+                if (err) res.sendStatus(500);
+                var ebmsDB = db.db("ebms");
+                objectId = new ObjectID(req.body.id);
+                ebmsDB.collection("schedules").deleteOne({_id: objectId}, function(err, result) {
+                    if (err) res.sendStatus(500);
+                    else res.sendStatus(200);
+                    db.close();
+                });
+                logger.info("deleted from the schedule");
+                db.close();
+            });
+        }
+        else {
+            logger.info("Invalid credentials");
+            res.send(401);
+        };
+    });
 });
 schedule.get('/', (req,res) => {
     var reqIPhash =  hash.sha256().update(req.headers['x-forwarded-for'] || req.connection.remoteAddress).digest('hex');
-    if(verifyIdentity(reqIPhash, function(auth, err) {})){
-        MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
-            if (err) throw err;
-            var ebmsDB = db.db("ebms");
-    
-            ebmsDB.collection("schedule").find({}, function(err, result) {
-                if (err) throw err;
-                res.send(result);
-                ebmsDB.close();
+    verifyIdentity(reqIPhash, function(authorised, error) {
+        if (error) res.send(error);
+        else if (authorised) {
+            MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
+                if (err) res.sendStatus(500);
+                var ebmsDB = db.db("ebms");
+        
+                ebmsDB.collection("schedules").find({}).toArray(function(err, result) {
+                    if (err) res.send(500);
+                    else res.send(result);
+                });
             });
-        });
-    }
-    else
-    {
-        res.send(401);
-    }
+        }
+        else {
+            logger.info("Invalid credentials");
+            res.send(401);
+        };
+    });
 });
 
 ///ALERTS
@@ -308,7 +361,7 @@ alerts.get('/', (req,res) => {
         ebmsDB.collection("alerts").find({}, function(err, result) {
             if (err) throw err;
             res.send(result);
-            ebmsDB.close();
+            db.close();
         });
         logger.info("Added new event to schedule");
     });
@@ -327,7 +380,7 @@ rooms.post('/', (req,res) => {
     ebmsDB.collection("apiKeys").insertOne(obj, function(err, result) {
         if (err) throw err;
         res.send(result);
-        ebmsDB.close();
+        db.close();
     });
     logger.info("Added new event to schedule");
 });
@@ -380,7 +433,7 @@ rooms.get('/:roomName', (req, res)=> {
             ebmsDB.collection("rooms").find({"name": room}, function(err, result) {
                 if (err) throw err;
                 res.send(result);
-                ebmsDB.close();
+                db.close();
             });
         });
     }
@@ -451,11 +504,8 @@ function initializeDatabase(callback) {
     MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
         if (err) return callback(null, err);
         let ebmsDB = db.db("ebms");
-        
-        // ebmsDB.createCollection("devices");
-        // ebmsDB.createCollection("rooms");
+
         // ebmsDB.createCollection("schedule");
-        // ebmsDB.createCollection("alerts");
         ebmsDB.collection("apiKeys").insertOne({"token":"3e48ef9d22e096da6838540fb846999890462c8a32730a4f7a5eaee6945315f7"}, function(err, result) {
             if (err) return callback(false, err);
             logger.info("Added localhost token to DB");
@@ -524,11 +574,35 @@ function loadDevices(reqIPhash,callback) {
     postGateway('json','{"control":{"cmd":"getdevice"}}', reqIPhash, 'sdk.cgi', function(data, err){
         if(!err){
             updateStoredDevices(parseDevices(data));
+            updateAlerts(data);
         }
         else{
             logger.info("Unable to get devices from Gateway");
             logger.info(err);
         }
+    });
+}
+
+function updateAlerts(devices) {
+    let parsedAlerts = [];
+    devices = JSON.parse(devices);
+    devices.device.forEach(element => {
+        if (element.lasttampertime != 0) {
+            let currentDeviceAlert = {'_id': element.uid, 'lastTamperTime':element.lasttampertime, 'name':element.channel[0].name};
+            parsedAlerts.push(currentDeviceAlert);
+        }
+    });
+    MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
+        if (err) throw err;
+        let ebmsDB = db.db("ebms");
+        let deviceIDs = [];
+        parsedAlerts.forEach(device => {
+            ebmsDB.collection("alerts").updateOne({_id: device._id},{ $set : {name:device.name}, $push : {tamperTimes:device.lastTamperTime}}, { upsert: true });
+            db.close();
+        });
+    
+        logger.info("Alerts Updated");
+
     });
 }
 
@@ -618,3 +692,52 @@ initializeDatabase(function(success, error) {
     else throw error;
 });
  //Call to load the devices
+
+setInterval( () => 
+    loadDevices("3e48ef9d22e096da6838540fb846999890462c8a32730a4f7a5eaee6945315f7", function(error, data){}),
+    300000
+);// Update Devices / alerts every 10 min
+
+setInterval( () => 
+    checkSchedule("3e48ef9d22e096da6838540fb846999890462c8a32730a4f7a5eaee6945315f7", function(error, data){}),
+    60000
+);// Update Devices / alerts every 10 min
+
+
+function checkSchedule(reqIPhash, callback) {
+    MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
+        if (err) throw err;
+        var dbo = db.db("ebms");
+        var today = new Date();
+        var time = today.getHours() + ":" + today.getMinutes();
+        var day = today.getDay();
+        day += -1;
+        if (day < 0) day = 6;
+        day += "";
+        console.log(day);
+        console.log(typeof day);
+        dbo.collection("schedules").find({"time":time, "day":day}).toArray(function(err, result) {
+            if (err) return callback(err, null);
+            else {
+                result.map(function(event, index) {
+                    const uid = event.deviceID;
+                    const cmd = event.command;
+                    const val = event.value;
+                    postGateway('json','{"control":{"cmd":"' + cmd + '","uid":' + uid + ',"val":' + val +'}}', reqIPhash, 'sdk.cgi', function(data, err){
+                        if(!err){
+                            logger.info("Command Sent");
+                        }
+                        else{
+                            logger.info("Unable to Send Command");
+                            logger.info(err);
+                        }
+                        db.close();
+                    });
+                });
+                
+                db.close();
+            }
+        });    
+        db.close();
+    });
+}

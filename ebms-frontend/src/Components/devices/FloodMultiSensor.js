@@ -1,17 +1,32 @@
 import React, { Component } from 'react';
+import Parent from '../device.js';
 
 class FloodMultiSensor extends Component {
-
     state = {
         temperature: '',
         humidity: '',
-        flood: ''
+        flood: '',
+        style: {}
+    }
+
+    componentWillUnmount() {
+        console.log("flood be gone");
+    }
+
+    removeClick = () => {
+        this.props.removeFunction();
     }
 
     render() {
         let triggered = "off"
-        if (this.props.deviceInfo.channels[0].basicValue/255 == 0) triggered = "No Flood";
-        else triggered =  "Flood Detected!";
+        if (this.props.deviceInfo.channels[0].basicValue/255 == 0) {
+            triggered = "No Flood";
+            this.state.style={};
+    }
+        else {
+            triggered =  "Flood Detected!";
+            this.state.style = {"background-color": "rgb(127, 255, 255)"};
+        } 
         
         this.props.deviceInfo.channels.map(function(device, index) {
             if (device.name === "Temperature Sensor") {
@@ -26,7 +41,7 @@ class FloodMultiSensor extends Component {
         }, this);
         return ( 
         
-            <div class="device" id={this.props.deviceInfo._id}>
+            <div class="device" id={this.props.deviceInfo._id} style={this.state.style}>
                 <section class="deviceHeader dis-flx">
                     <img alt="flood icon" class="smallIcon neutralIcon" src="images/deviceIcons/home-flood.svg" ></img>
                     <h3 class="deviceTitle">Flood Multi-Sensor</h3>
@@ -38,7 +53,7 @@ class FloodMultiSensor extends Component {
                 </section>
                 <section class="deviceFooter dis-flx">
                     <h5>Last Updated: ...</h5>
-                    <img class="smallIcon roundButton dangerIcon" src="images/generalIcons/remove.svg"></img>
+                    <img class="smallIcon roundButton dangerIcon" onClick={this.removeClick} src="images/generalIcons/remove.svg"></img>
                 </section>
             </div>
         

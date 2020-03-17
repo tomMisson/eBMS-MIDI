@@ -4,7 +4,93 @@
   border: 0;
   font-family: "Roboto",Sans-serif;
   box-sizing: border-box;
-  transition: width 0.3s, height 0.3s, padding 0.3s, background-color 0.3s;
+  transition: width 0.3s, height 0.3s, padding 0.3s, background-color 0.3s ease, transform 0.3s;
+}
+
+.scheduleTable {
+  width: -webkit-fill-available;
+  position: relative;
+  border-spacing: 0;
+  box-shadow: 1px 1px 2px #888888;
+  color: #727272;
+  margin: 0.5rem 1rem;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  box-shadow: 1px 1px 2px #888888;
+  background-color: white;
+}
+
+.scheduleTable tr {
+  height: 2rem;
+}
+
+.scheduleTable th {
+  border-bottom: solid rgba(224, 224, 224, 0.466);
+}
+
+.columnBorder td, .columnBorder th {
+  border-left: solid rgb(224, 224, 224);
+  position: relative;
+}
+
+.noDay {
+  width: 5.5% !important;
+  border-left: none !important;
+}
+
+#daysOfWeekHeaders th {
+  width: 13.5%;
+}
+
+
+#daysOfWeekHeaders th {
+  -webkit-writing-mode: vertical-rl;
+  -ms-writing-mode: tb-rl;
+  writing-mode: vertical-rl;  
+}
+
+hr {
+  margin: 0 0.25rem;
+  border: 1px solid rgb(175, 175, 175);
+  border-radius: 50%;
+  background-color: rgb(175, 175, 175);
+}
+
+.tooltip {
+  position: relative;
+  width: 100%;
+}
+
+.tooltiptext {
+  display: none;
+  position: absolute;
+  bottom: -100%;
+  max-width: 8rem;
+  min-width: 100%;
+  background-color: #bdbdbd62;
+  color: #000000;
+  line-clamp: 4;
+  -webkit-line-clamp: 4;
+  z-index: 10;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.eventDiv:hover .tooltiptext {
+  display: block !important;
+}
+
+#sirenSound {
+  padding: 0.5rem 5.9rem;
+  width: 16rem;
+  text-align: center;
+  cursor: pointer;
+  border-radius: 1rem 1rem 0 0;
+  text-align: center;
+}
+
+#sirenSound:active {
+  background-color: rgba(0, 47, 255, 0.596);
 }
 
 button {
@@ -60,29 +146,34 @@ main {
   overflow: auto;
 }
 
-#addDeviceScreen {
+#title {
+  visibility: hidden;
+}
+
+#addRemoveDeviceScreen, #addEventScreen, #editEventScreen {
   background-color: #0000007c;
   z-index: 2000;
   align-items: center;
   justify-content: center;
 }
 
-#AddAbortButton {
+#addRemoveAbortButton {
   padding: 0.5rem 3rem;
   border-radius: 1rem;
   box-shadow: 2px 2px 3px rgb(0, 34, 63);
+  cursor: pointer;
 }
 
-#AddAbortButton:active {
+#addRemoveAbortButton:active {
   padding: 0.5rem 3rem;
   border-radius: 1rem;
   box-shadow: 1px 1px 2px rgb(0, 0, 0);
   background-color: rgba(0, 47, 255, 0.596);
 }
 
-#AddSearchingBox {
+#addRemoveSearchingBox, #addEventBox, #editEventBox {
   width: 80vw;
-  height: 80vw;
+  min-height: 80vw;
   background-color: white;
   border-radius: 3rem;
   align-items: center;
@@ -93,7 +184,16 @@ main {
   line-height: normal;
 }
 
-#AddSearchingBox h2, #AddSearchingBox h3 {
+#addEventBox, #editEventBox {
+  width: 90vw;
+  min-height: 90vw;
+}
+
+#addRemoveSearchingBox h2, #addRemoveSearchingBox h3 {
+  min-width: 100%;
+}
+
+#addEventBox h2, #addEventBox h3, #editEventBox h2, #editEventBox h3 {
   min-width: 100%;
 }
 
@@ -105,6 +205,7 @@ header  {
   line-height: 3.5em;
   vertical-align: middle;
   color: #61116a;
+  box-shadow: 1px 1px 2px #888888;
 }
 
 #headerLeft {
@@ -213,26 +314,28 @@ nav li:active {
   float: left;
   min-height: calc(100vh - 3.5em);
   max-height: calc(100vh - 3.5em);
-  
   z-index: 1000;
+  width: 15em;
+  box-shadow: 1px 1px 2px #888888;  
 }
 
-.expanded {
-  width: 100%;
+#menu h4 {
+  display: inline;
 }
 
 .closed {
-  width: 0;
-  visibility: hidden;
+  transform: translate(-15em, 0);
 }
 
-#AddDevice {
+.block {
+  width: 100vw;
+  height: calc(100vh - 3.5em);
+  z-index: 750;
+  background-color: #60606027;
   position: fixed;
-  bottom: 1rem;
-  right: 1rem;
 }
 
-#AddRoom {
+#AddDevice, #AddRoom, #AddEvent  {
   position: fixed;
   bottom: 1rem;
   right: 1rem;
@@ -279,6 +382,14 @@ nav li:active {
   text-align: center;
 }
 
+select, input, .deleteButton {
+  padding: 0.5rem 3rem;
+  width: 16rem;
+  text-align: center;
+  box-shadow: 1px 1px 2px #888888;
+  border-radius: 1rem;
+}
+
 .power {
   padding: 0.5rem 3rem;
   width: 8rem;
@@ -286,12 +397,35 @@ nav li:active {
   cursor: pointer;
 }
 
-.powerOn {
+.powerOn, .powerOnLabel {
   border-radius: 1rem 0 0 1rem;
+  display: inline-block;
 }
 
-.powerOff {
+.powerOff, .powerOffLabel {
   border-radius: 0 1rem 1rem 0;
+  display: inline-block;
+}
+
+.powerOnRadio, .powerOffRadio {
+  position: fixed;
+  z-index: -1;
+}
+
+.powerOnRadio:checked ~ .powerOnLabel {
+  background-color: #00ff0055
+}
+
+.powerOffRadio:checked ~ .powerOffLabel {
+  background-color: #ff000055;
+}
+
+[id="0"] .powerOn, .siren .powerOnLabel {
+  border-radius: 0 0 0 1rem;
+}
+
+[id="0"] .powerOff, .siren .powerOffLabel {
+  border-radius: 0 0 1rem 0;
 }
 
 .powerOn:active {
@@ -381,9 +515,13 @@ nav li:active {
 }
 
 /* Medium devices (tablets, 768px and up) */
-@media (min-width: 768px) and (max-width: 991px) {
+@media (min-width: 768px) {
   .pad-main-2{padding: 0;}
   .pad-main-1{padding: 0;}
+
+  #title {
+    visibility: visible;
+  }
 
   .expanded {
     width: 15em;
@@ -393,12 +531,14 @@ nav li:active {
     display: inline;
   }
 
-  .block {
-    width: 100vw;
-    height: calc(100vh - 3.5em);
-    z-index: 750;
-    background-color: #60606027;
-    position: fixed;
+  #addEventBox, #editEventBox {
+    width: 23rem;
+    min-height: 23rem;
+  }
+
+  #addRemoveSearchingBox {
+    width: 18rem;
+    min-height: 18rem;
   }
 }
 
@@ -407,24 +547,15 @@ nav li:active {
   .pad-main-2{padding: 0 calc(100% / 15);}
   .pad-main-1{padding: 0;}
 
-  #menu {
-    position: initial;
+  .block {
+    width: 0;
+    height: 0;
+    z-index: -1;
+    background-color: #60606000;
+    position: fixed;
+    visibility: hidden;
   }
 
-  .expanded {
-    width: 15em;
-  }
-
-  .expanded h4 {
-    display: inline;
-  }
-}
-
-/* Extra large devices (large desktops, 1200px and up) */
-@media (min-width: 1200px) {
-  .pad-main-2{padding: 0 calc(100% / 9);}
-  .pad-main-1{padding: 0 calc(100% / 18);}
-  
   #menu {
     position: initial;
   }
@@ -438,7 +569,56 @@ nav li:active {
   }
 
   .closed {
-    width: 4.5em;
+    width:0 !important;
+    position: fixed;
+  }
+
+  #addEventBox, #editEventBox {
+    width: 24rem;
+    min-height: 24rem;
+  }
+
+  #addRemoveSearchingBox {
+    width: 19rem;
+    min-height: 19rem;
+  }
+}
+
+/* Extra large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px) {
+  .pad-main-2{padding: 0 calc(100% / 9);}
+  .pad-main-1{padding: 0 calc(100% / 18);}
+
+  .expanded {
+    width: 15em !important;
+  }
+
+  .expanded h4 {
+    display: inline;
+  }
+
+  .closed {
+    transform: unset;
+    width: 4.5em !important;
     visibility: initial;
+  }
+
+  .closed h4 {
+    display:block !important;
+  }
+
+  #menu {
+    position: initial;
+    width: 4.5em;
+  }
+
+  #addEventBox, #editEventBox {
+    width: 25rem;
+    min-height: 25rem;
+  }
+
+  #addRemoveSearchingBox {
+    width: 20rem;
+    min-height: 20rem;
   }
 }
