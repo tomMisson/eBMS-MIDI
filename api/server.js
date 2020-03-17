@@ -339,6 +339,7 @@ schedule.get('/', (req,res) => {
                     if (err) res.send(500);
                     else res.send(result);
                 });
+                db.close();
             });
         }
         else {
@@ -354,16 +355,26 @@ alerts.post('/', (req,res) => {
     // Will need to regularly poll this endpoint and rules for an alert implemented 
 });
 alerts.get('/', (req,res) => {
-    MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
-        if (err) throw err;
-        var ebmsDB = db.db("ebms");
-
-        ebmsDB.collection("alerts").find({}, function(err, result) {
-            if (err) throw err;
-            res.send(result);
-            db.close();
-        });
-        logger.info("Added new event to schedule");
+    var reqIPhash =  hash.sha256().update(req.headers['x-forwarded-for'] || req.connection.remoteAddress).digest('hex');
+    verifyIdentity(reqIPhash, function(authorised, error) {
+        if (error) res.send(error);
+        else if (authorised) {
+            MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
+                if (err) res.sendStatus(500);
+                var ebmsDB = db.db("ebms");
+        
+                ebmsDB.collection("alerts").find({}).toArray(function(err, result) {
+                    if (err) res.send(500);
+                    else res.send(result);
+                });
+                db.close();
+            });
+            loadDevices(reqIPhash, function(error, data){});
+        }
+        else {
+            logger.info("Invalid credentials");
+            res.send(401);
+        };
     });
 });
 
@@ -597,7 +608,7 @@ function updateAlerts(devices) {
         let ebmsDB = db.db("ebms");
         let deviceIDs = [];
         parsedAlerts.forEach(device => {
-            ebmsDB.collection("alerts").updateOne({_id: device._id},{ $set : {name:device.name}, $push : {tamperTimes:device.lastTamperTime}}, { upsert: true });
+            ebmsDB.collection("alerts").updateOne({_id: device._id},{ $set : {name:device.name}, $addToSet : {tamperTimes:device.lastTamperTime}}, { upsert: true });
             db.close();
         });
     
