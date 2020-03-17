@@ -239,7 +239,7 @@ class Schedule extends Component {
             "cursor": "pointer",
             "position": "absolute"
         };
-    return <div id={eventInfo._id} style={style} onClick={this.showEditEvent.bind(this, eventInfo._id, eventInfo.title, eventInfo.time, eventInfo.deviceID, eventInfo.day)} class="eventDiv"><div class="tooltip"><span class="tooltiptext">{eventInfo.time}<br/>{eventInfo.title}</span></div></div>
+        return <div id={eventInfo._id} style={style} onClick={this.showEditEvent.bind(this, eventInfo._id, eventInfo.title, eventInfo.time, eventInfo.deviceID, eventInfo.day)} class="eventDiv"><div class="tooltip"><span class="tooltiptext">{eventInfo.time}<br/>{eventInfo.title}</span></div></div>
     }
 
     editEvent(e) {
