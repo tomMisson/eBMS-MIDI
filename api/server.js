@@ -91,7 +91,6 @@ auth.get('/', (req, res) => {
 
 auth.post('/', (req, res) => {
     const data = req.body
-    console.log(data);
     var reqIPhash =  hash.sha256().update(req.headers['x-forwarded-for'] || req.connection.remoteAddress).digest('hex');
     //If they exist in the DB then just 200
     if(verifyIdentity(reqIPhash, function(auth, err) {})){//MAY CAUSE ISSUES LATER WHEN USER CONNECTS TO WEB UI UN-AUTHED
@@ -286,7 +285,6 @@ schedule.post('/edit', (req,res) => {
                 objectId = new ObjectID(obj._id);
                 delete obj._id;
                 ebmsDB.collection("schedules").updateOne({_id: objectId},{ $set : obj}, function(err, result) {
-                    console.log(err);
                     if (err) res.sendStatus(500);
                     else res.sendStatus(200);
                     db.close();
@@ -725,8 +723,6 @@ function checkSchedule(reqIPhash, callback) {
         day += -1;
         if (day < 0) day = 6;
         day += "";
-        console.log(day);
-        console.log(typeof day);
         dbo.collection("schedules").find({"time":time, "day":day}).toArray(function(err, result) {
             if (err) return callback(err, null);
             else {

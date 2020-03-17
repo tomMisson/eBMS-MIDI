@@ -220,7 +220,6 @@ class Schedule extends Component {
             .then(res => {
                 if(res.ok) {
                     this.getSchedules();
-                    console.log(res);
                     alert("Event added");
                 }
             });
@@ -288,7 +287,6 @@ class Schedule extends Component {
     }
 
     deleteEvent(e) {
-        console.log(e.target.id)
         var myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
         fetch("http://" +  window.location.hostname +":3000/api/schedule/", {method:"DELETE", body:JSON.stringify({id:e.target.id}), headers: myHeaders})

@@ -61,8 +61,6 @@ class RegisterBox extends Component {
     
     submitRegister(e) {
   
-      console.log(this.state);
-  
       if (this.state.username === "") {
         this.showValidationErr("username", "Username Cannot be empty!");
       }
