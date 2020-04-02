@@ -1,4 +1,6 @@
 # eBMS-MIDI
+[![Netlify Status](https://api.netlify.com/api/v1/badges/8c5fe4f2-da84-42ed-a8c5-42be44def1fb/deploy-status)](https://app.netlify.com/sites/ebms-midi/deploys)
+[![CI Status ](https://github.com/tomMisson/eBMS-MIDI/workflows/CI/badge.svg)]
 HTML5 User interface for MIDI Gateway
 
 ## Contents
